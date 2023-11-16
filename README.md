@@ -4,11 +4,11 @@ The task is to implement a library that detects the programming and markup langu
 
 ## Dataset Properties
 
-This time telegram provided a dataset. There are 21738 text pieces and among them 1969 are codes. I put them into `ml2023dataset.db`.
+This time Telegram provided a dataset. There are 21738 text pieces, and among them 1969 are codes. I put them into `ml2023dataset.db`.
 
-The longest human language is 11117; the longest code is 4081. Some very long code end with '⚠ *message was cropped according to telegram limits!* ⚠'.
+The longest human language is 11117; the longest code is 4081. Some very long code ends with '⚠ *message was cropped according to telegram limits!* ⚠'.
 
-We did some simple classification. The languages, its index and #appearing and the frequency are as follows (sort by the freq):
+We did some simple classification. The languages, their index and #appearing, and the frequency are as follows (sorted by the freq):
 
 |Language   |idx |count|freq|
 |-----------|----|-----|----|
