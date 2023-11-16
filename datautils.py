@@ -22,6 +22,15 @@ def init_db():
     conn.close()
     print('inited table datasetr1')
 
+def read_db():
+    conn = sqlite3.connect(db_name)
+    c = conn.cursor()
+    c.execute('select file_text,type29 from datasetr1 where type29>=0 and type29<100 order by id;')
+    data = []
+    for text,type29 in c.fetchall():
+        data.append((text,type29))
+    return data
+
 def traverse_folder():
     conn = sqlite3.connect(db_name)
     c = conn.cursor()
@@ -44,5 +53,6 @@ def traverse_folder():
     print("there are %d files, among them %s are codes"%(numfile,numcode))
 
 if __name__=="__main__":
-    init_db()
-    traverse_folder()
+    # init_db()
+    # traverse_folder()
+    read_db()
