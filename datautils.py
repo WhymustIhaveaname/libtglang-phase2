@@ -22,13 +22,20 @@ def init_db():
     conn.close()
     print('inited table datasetr1')
 
-def read_db():
+def read_db(seglen=512):
     conn = sqlite3.connect(db_name)
     c = conn.cursor()
     c.execute('select file_text,type29 from datasetr1 where type29>=0 and type29<100 order by id;')
     data = []
     for text,type29 in c.fetchall():
-        data.append((text,type29))
+        if type29==0 or len(text)<seglen:
+            data.append((text,type29))
+        else:
+            nseg  = len(text)//seglen + 1
+            start = 0
+            for _ in range(nseg):
+                data.append((text[start:start+seglen],type29))
+                start += seglen
     return data
 
 def traverse_folder():

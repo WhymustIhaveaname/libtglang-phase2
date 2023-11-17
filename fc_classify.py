@@ -12,6 +12,8 @@ from tqdm import tqdm
 from constants import *
 from datautils import *
 
+torch.manual_seed(2023)
+
 class FClassifier(nn.Module):
     def __init__(self):
         super().__init__()
@@ -43,7 +45,7 @@ def load_data(ratio=10):
     return trainset,testset
 
 def text2feature(text):
-    x = torch.zeros(len(keywords))
+    x = torch.zeros(len(keywords),dtype=torch.float)
     for i,j in enumerate(keywords):
         x[i] = text.count(j)
     return x
@@ -51,13 +53,13 @@ def text2feature(text):
 def train():
     model = FClassifier()
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=0.01)
+    optimizer = optim.Adam(model.parameters(), lr=0.001)
 
     trainset,testset = load_data()
     traindl = DataLoader(dataset=trainset,batch_size=16,shuffle=True,drop_last=True)
     testdl  = DataLoader(dataset=testset,batch_size=16,shuffle=False)
 
-    for epoch in range(100):
+    for epoch in range(50):
         totloss = 0.0
         totnum  = 0
         for inputs,labels in traindl:
@@ -71,20 +73,20 @@ def train():
             totloss += loss.item()
             totnum  += len(labels)
 
-        if (epoch+1) % 10 == 0:
+        if (epoch+1) % 1 == 0:
             trainloss,trainc1,trainc2 = test(model,traindl)
             testloss,testc1,testc2     =test(model,testdl)
-            print('Epoch %d, Train: %.4f, %.2f, %.2f; Test: %.4f, %.2f, %.2f'%(epoch+1,trainloss,trainc1*100,trainc2*100,testloss,testc1*100,testc2*100))
+            print('Epoch %2d, Train: %.4f, %.2f, %.2f; Test: %.4f, %.2f, %.2f'%(epoch+1,trainloss,trainc1*100,trainc2*100,testloss,testc1*100,testc2*100))
 
 def test(model,dl):
     model.eval()
     with torch.no_grad():
         criterion = nn.CrossEntropyLoss()
         totloss = 0.0
-        totnum  = 0
+        totnum  = 0.1
         codetect = 0   #Code/Other Detection: 62.7
         langdetect = 0 #Language Detection: 79.5
-        langnum    = 0
+        langnum    = 0.1
         for inputs,labels in dl:
             outputs = model(inputs)
             loss = criterion(outputs, labels)
