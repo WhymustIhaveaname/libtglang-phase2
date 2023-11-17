@@ -2,6 +2,13 @@
 
 The task is to implement a library that detects the programming and markup language of code snippets from message text. [contest link](https://t.me/contest/346)
 
+## File Descriptions
+
+* `constants.py` is basically `tglang.h`.
+* `data_utils.py` loads the dataset into SQLite and reads SQLite out as `[(text, label),...]`, `ml2023dataset.db` is the database it created.
+* `fc_classify.py` trains the classifier.
+* `tglang.pyx` uses the pre-trained classifier and `setup.py` is for compiling it to `.so`.
+
 ## Dataset Properties
 
 This time Telegram provided a dataset. There are 21738 text pieces, and among them 1969 are codes. I put them into `ml2023dataset.db`.
