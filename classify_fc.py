@@ -38,16 +38,40 @@ def load_data(ratio=10):
     for text,type29 in tqdm(data):
         counter[type29] += 1
         if counter[type29]%ratio == 0:
-            testset.append((text2feature(text),torch.tensor(type29,dtype=torch.long)))
+            testset.append((text2feature2(text),torch.tensor(type29,dtype=torch.long)))
         else:
-            trainset.append((text2feature(text),torch.tensor(type29,dtype=torch.long)))
+            trainset.append((text2feature2(text),torch.tensor(type29,dtype=torch.long)))
     print("split into %d train and %d test"%(len(trainset),len(testset)))
     return trainset,testset
 
 def text2feature(text):
+    return 'not using'
     x = torch.zeros(len(keywords),dtype=torch.float)
     for i,j in enumerate(keywords):
         x[i] = text.count(j)
+    return x
+
+def text2feature2(text):
+    """
+        k: max length of all keywords
+        m: num of keywords
+        n: len of text
+        time complexity: nk
+    """
+    x = torch.zeros(len(keywords),dtype=torch.float)
+    n = len(text)
+    inkws = torch.zeros(n,dtype=torch.bool) # marks a char has been in keywords or not
+    for l in range(kmax, 0, -1):
+        i = 0
+        while i <= n-l:
+            while i <= n-l and (inkws[i:i+l].any() or text[i:i+l] not in keyword2idx):
+                i += 1
+            if i > n-l:
+                break
+            x[keyword2idx[text[i:i+l]]] += 1
+            for j in range(i, i+l):
+                inkws[j] = True
+            i = i+l
     return x
 
 def train():
@@ -104,3 +128,4 @@ if __name__=="__main__":
     # trainset,testset = load_data()
     # print(testset[0])
     train()
+    # print(text2feature2("alignas alignof and and_eq as asm"))

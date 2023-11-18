@@ -12,7 +12,6 @@ from Cython.Build import cythonize
 import numpy
 import os
 
-
 setup(
     ext_modules = cythonize("tglang.pyx"),
     #scripts = ["tglang.pyx"],
