@@ -99,7 +99,7 @@ keywords = {
 common_English_words = ['the', 'be', 'of', 'to', 'in', 'I', 'you', 'it', 'have', 'that', 'do', 'he', 'with', 'on', 'this', "n't", 'we', 'that', 'but', 'they', 'say', 'at', 'what', 'his', 'go', 'by', 'get', 'she', 'my', 'can', 'know', 'me', 'your', 'who', 'about', 'their', 'will', 'so', 'would', 'make', 'just', 'up', 'think', 'time',
                         'there', 'see', 'her', 'out', 'one', 'come', 'people', 'take', 'year', 'him', 'them', 'some', 'want', 'how', 'when', 'which', 'now', 'like', 'other', 'could', 'our', 'into', 'here', 'then', 'than', 'look', 'way', 'more', 'these', 'no', 'thing', 'well', 'because', 'also', 'two', 'use', 'tell', 'good', 'first', 'man', 'day', 'find', 'give', 'more']
 tmp = common_English_words[:num_English_words]
-text_keywords = [' '+s+' ' for s in tmp]+[' '+s+'.' for s in tmp]
+text_keywords = [' '+s+' ' for s in tmp]
 text_keywords = list(set(text_keywords))
 
 keywords = list(set(keywords))
