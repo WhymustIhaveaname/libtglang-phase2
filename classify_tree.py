@@ -52,9 +52,9 @@ def text2feature2(text):
     return x
 
 def train01():
-    model = CatBoostClassifier(iterations=1,
-                           learning_rate=0.5,
-                           depth=3,
+    model = CatBoostClassifier(iterations=150,
+                           learning_rate=0.4,
+                           depth=4,
                            #loss_function='MultiClass',  # 使用多类别的损失函数
                            #verbose=True
                            )
@@ -67,16 +67,68 @@ def train01():
     print('human ratio:',sum(1 for i in trainset if i[1]==0)/len(trainset))
     ptrain = Pool([i[0] for i in trainset],label=[0 if i[1]==0 else 1 for i in trainset])
     ptest  = Pool([i[0] for i in testset],label=[0 if i[1]==0 else 1 for i in testset])
+
+    # get best hyperparameter by grid search
+    # grid = {'learning_rate': [0.3,0.35,0.4,0.45,0.5],
+    #         'depth': [4,]
+    #         }
+    # print(model.grid_search(grid,X=ptrain))
+
     model.fit(ptrain,eval_set=ptest)
-    print(model.get_all_params())
+
     test(model,trainset)
     test(model,testset)
     print("tree count after train",model.tree_count_)
 
-    graph = model.plot_tree(tree_idx=0)
-    graph.view()
+    # graph = model.plot_tree(tree_idx=0)
+    # graph.view()
 
-    #print(model.get_feature_importance(data=ptrain))
+    imp = model.get_feature_importance(data=ptrain)+model.get_feature_importance(data=ptest)
+    print(imp)
+    zeroimp = []
+    for i,j in enumerate(imp):
+        if j==0:
+            zeroimp.append(keywords[i])
+    print(zeroimp)
+
+def train29():
+    model = CatBoostClassifier(iterations=150,
+                           learning_rate=0.4,
+                           depth=4,
+                           loss_function='MultiClass',  # 使用多类别的损失函数
+                           )
+
+    # trainset,testset = load_data()
+    # with open("loaded_data.pickle",'wb') as f:
+    #     pickle.dump((trainset,testset),f)
+    with open("loaded_data.pickle",'rb') as f:
+        trainset,testset = pickle.load(f)
+    print('human ratio:',sum(1 for i in trainset if i[1]==0)/len(trainset))
+    ptrain = Pool([i[0] for i in trainset],label=[0 if i[1]==0 else 1 for i in trainset])
+    ptest  = Pool([i[0] for i in testset],label=[0 if i[1]==0 else 1 for i in testset])
+
+    # get best hyperparameter by grid search
+    # grid = {'learning_rate': [0.3,0.35,0.4,0.45,0.5],
+    #         'depth': [4,]
+    #         }
+    # print(model.grid_search(grid,X=ptrain))
+
+    model.fit(ptrain,eval_set=ptest)
+
+    test(model,trainset)
+    test(model,testset)
+    print("tree count after train",model.tree_count_)
+
+    # graph = model.plot_tree(tree_idx=0)
+    # graph.view()
+
+    imp = model.get_feature_importance(data=ptrain)+model.get_feature_importance(data=ptest)
+    print(imp)
+    zeroimp = []
+    for i,j in enumerate(imp):
+        if j==0:
+            zeroimp.append(keywords[i])
+    print(zeroimp)
 
 def test(model,dataset):
     """
@@ -93,5 +145,4 @@ def test(model,dataset):
     return detect01,detect29
 
 if __name__=="__main__":
-    print(keywords[272],keywords[273],keywords[81])
-    #train01()
+    train01()
