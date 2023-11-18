@@ -18,14 +18,22 @@ def init_db():
         type29 INT,
         len  INT
     )''')
+    c.execute('''CREATE TABLE IF NOT EXISTS datasetd1(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        file_path TEXT,
+        file_text TEXT,
+        type01 INT,
+        type29 INT,
+        len  INT
+    )''')
     conn.commit()
+    print('inited table')
     conn.close()
-    print('inited table datasetr1')
 
-def read_db(seglen=512):
+def read_db(seglen=512,table='datasetr1'):
     conn = sqlite3.connect(db_name)
     c = conn.cursor()
-    c.execute('select file_text,type29 from datasetr1 where type29>=0 and type29<100 order by id;')
+    c.execute('select file_text,type29 from %s where type29>=0 and type29<100 order by id;'%(table))
     data = []
     for text,type29 in c.fetchall():
         if type29==0 or len(text)<seglen:
@@ -38,11 +46,11 @@ def read_db(seglen=512):
                 start += seglen
     return data
 
-def traverse_folder():
+def traverse_folder(dataset="r1"):
     conn = sqlite3.connect(db_name)
     c = conn.cursor()
     numfile,numcode = 0,0
-    for root,dirs,files in os.walk("ml2023-r1-dataset"):
+    for root,dirs,files in os.walk("ml2023-%s-dataset"%(dataset)):
         for file in files:
             numfile += 1
             file_path = os.path.join(root, file)
@@ -54,7 +62,7 @@ def traverse_folder():
 
             with open(file_path,'r') as f:
                 file_text = f.read().strip()
-            c.execute("INSERT INTO datasetr1 (file_path,file_text,type01,type29,len) VALUES (?,?,?,?,?)",(file_path,file_text,iscode,-1 if iscode else 0,len(file_text)))
+            c.execute("INSERT INTO dataset%s (file_path,file_text,type01,type29,len) VALUES (?,?,?,?,?)"%(dataset),(file_path,file_text,iscode,-1 if iscode else 0,len(file_text)))
     conn.commit()
     conn.close()
     print("there are %d files, among them %s are codes"%(numfile,numcode))
@@ -72,7 +80,7 @@ def stat():
         print("|%11s|%2d|%5d|%.2f%%|"%(idx2lang[i],i,j,j/len(data)*100))
 
 if __name__=="__main__":
-    # init_db()
-    # traverse_folder()
+    init_db()
+    traverse_folder(dataset='d1')
     # read_db()
-    stat()
+    # stat()
