@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from filter_keywords import filter_keywords
 
 TglangLanguage = (
     'OTHER',  # TGLANG_LANGUAGE_OTHER,
@@ -111,6 +110,15 @@ keywords = [
 "<< endl;\n', in ('    ",
 ]
 
+keywords = list(set(keywords))
+keywords.sort(key=str.lower)
+
+kmax = max(len(k) for k in keywords)
+keyword2idx = {k:i for i,k in enumerate(keywords)}
+
+print("keywords:\n%s"%(keywords))
+print("max keywords len (kmax): %d"%(kmax))
+
 '''
 # C keywords
 keywords = {
@@ -145,21 +153,7 @@ keywords.update({
     'protected', 'public', 'return', 'super', 'switch', 'static', 'this', 'throw', 'try', 'true',
     'typeof', 'var', 'void', 'while', 'with', 'yield', })
 
-keywords = list(keywords)
-keywords.sort(key=str.lower)
-# print(len(keywords), 'keywords:', keywords)
 frequency_ratio = filter_keywords(keywords)
 print('\n')
 print([key for key, _ in frequency_ratio])
 '''
-
-keywords = [i for i,j in keywords if j>0]
-keywords.sort(key=lambda x:(len(x),x.lower()))
-for i,j in enumerate(keywords):
-    j = j.replace("\n","\\n")
-    if "'" in j:
-        print('"%s"'%(j),end=", ")
-    else:
-        print("'%s'"%(j),end=", ")
-    if (i+1)%8==0:
-        print()

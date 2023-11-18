@@ -79,8 +79,18 @@ def stat():
     for i,j in types:
         print("|%11s|%2d|%5d|%.2f%%|"%(idx2lang[i],i,j,j/len(data)*100))
 
+def count_nonoccr_keyword():
+    data = read_db()
+    for k in keywords:
+        for i,j in data:
+            if k in i:
+                break
+        else:
+            print("%s does not occur!"%(k))
+
 if __name__=="__main__":
-    init_db()
-    traverse_folder(dataset='d1')
+    # init_db()
+    # traverse_folder(dataset='d1')
     # read_db()
     # stat()
+    count_nonoccr_keyword()
