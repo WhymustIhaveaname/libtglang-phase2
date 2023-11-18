@@ -3,27 +3,31 @@
 #include <stdio.h>   /* printf */
 #include "uthash.h"
 
-#define keywordLeng 25 //最长关键词长度
-#define keywordNum 100 //关键词个数
+#define keywordLen 25 //最长关键词长度
+#define keywordNum 4 //关键词个数
+const char *keywordsList[]={ "==", "=", "!=", ";",NULL };
+const float weight1[keywordNum]={-0.6,0.1,0.3,0.5};
+const float weight2[][keywordNum]={{1.0,2.0,2.5,0.4},{-0.5,-0.9,0.0,-0.2}};
+const float bias2[]={-0.5,1.0};
 
 struct custom_set {
-    char name[keywordLeng];             /* key (string is WITHIN the structure) */
+    char name[keywordLen];             /* key (string is WITHIN the structure) */
     int id;
     UT_hash_handle hh;         /* makes this structure hashable */
 };
 
-float *count_keyword_frequency(const char *input, struct custom_set *keywords){
-    //This function can only be used once, because freq will only be initialized once.
+void count_keyword_frequency(const char *input, struct custom_set *keywords, float *freq){
+    //write frequencies into 'freq'
     int n=strlen(input);
-    static float freq[keywordNum]={0.0};
+    //static float freq[keywordNum]={0.0};
     int *inkeywords=(int *)malloc(n*sizeof(int));
     for(int i=0;i<n;i++){
         inkeywords[i]=0;
     }
-    for(int l=keywordLeng;l>=1;l--){
+    for(int l=keywordLen;l>=1;l--){
         for(int i=0;i<=n-l;i++){
             int flag=0;
-            char substr[keywordLeng+1]; //substr=input[i:i+l]
+            char substr[keywordLen+1]; //substr=input[i:i+l]
             for(int j=0;j<=l-1;j++){
                 if(inkeywords[i+j]==1){
                     flag=1;
@@ -35,7 +39,7 @@ float *count_keyword_frequency(const char *input, struct custom_set *keywords){
                 continue;
             }
             substr[i+l]='\0';
-            struct custom_set *s;
+            struct custom_set *s=NULL;
             HASH_FIND_STR(keywords, substr, s);
             if(s){
                 for(int j=0;j<=l-1;j++){
@@ -49,12 +53,29 @@ float *count_keyword_frequency(const char *input, struct custom_set *keywords){
     for(int i=0;i<keywordNum;i++){
         freq[i]=freq[i]/n;
     }
-    return freq;
+}
+
+float blas1(const float *w, float *x, float b, int n){
+    //return w'*x+b
+    float ans=b;
+    for(int i=0;i<n;i++){
+        ans=ans+w[i]*x[i];
+    }
+    return ans;
+}
+
+void blas2(const float (*W)[keywordNum],float *x,const float *b,int m,int n,float *ans){
+    //write W*x+b into ans
+    for(int i=0;i<m;i++){
+        ans[i]=b[i];
+        for(int j=0;j<n;j++){
+            ans[i]=ans[i]+W[i][j]*x[j];
+        }
+    }
 }
 
 int main(int argc, char *argv[]) {
     //const char *names[] = { "joe", "bob", "betty", NULL };
-    const char *keywordsList[]={ "==", "=", "!=", ";",NULL };
     struct custom_set *s, *tmp, *keywords = NULL;
     for (int i = 0; keywordsList[i]; ++i) {
         s = (struct custom_set *)malloc(sizeof *s);
@@ -66,12 +87,21 @@ int main(int argc, char *argv[]) {
     const char *input1="Here = an example of code;;";
     const char *input2="Here is an example of text.";
 
-    float *freq1=count_keyword_frequency(input1,keywords);
-    //float *freq2=count_keyword_frequency(input2,keywords);
+    float freq[keywordNum]={0.0};
+    count_keyword_frequency(input1,keywords,freq);
+    //count_keyword_frequency(input2,keywords,freq);
 
-    for(int i=0;i<=6;i++){
-        printf("%f\n", freq1[i]);
+    for(int i=0;i<=3;i++){
+        printf("%f  ", freq[i]);
     }
+    printf("\n");
+
+    float ans1=blas1(weight1,freq,0,keywordNum);
+    printf("%f\n", ans1);
+
+    float ans2[2]={0.0};
+    blas2(weight2,freq,bias2,sizeof(bias2)/sizeof(bias2[0]),keywordNum,ans2);
+    printf("%f\n", ans2[1]);
 
     HASH_FIND_STR(keywords, ";", s);
     if (s) printf(";'s id is %d\n", s->id);
