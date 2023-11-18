@@ -5,7 +5,7 @@
 
 #define keywordLen 25 //最长关键词长度
 #define keywordNum 4 //关键词个数
-const char *keywordsList[]={ "==", "=", "!=", ";",NULL };
+const char *keywordsList[]={ "==", "=", "!=", ";" };
 const float weight1[keywordNum]={-0.6,0.1,0.3,0.5};
 const float weight2[][keywordNum]={{1.0,2.0,2.5,0.4},{-0.5,-0.9,0.0,-0.2}};
 const float bias2[]={-0.5,1.0};
@@ -77,7 +77,7 @@ void blas2(const float (*W)[keywordNum],float *x,const float *b,int m,int n,floa
 int main(int argc, char *argv[]) {
     //const char *names[] = { "joe", "bob", "betty", NULL };
     struct custom_set *s, *tmp, *keywords = NULL;
-    for (int i = 0; keywordsList[i]; ++i) {
+    for (int i = 0; i<keywordNum; i++) {
         s = (struct custom_set *)malloc(sizeof *s);
         strcpy(s->name, keywordsList[i]);
         s->id = i;
