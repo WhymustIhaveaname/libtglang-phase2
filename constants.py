@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+num_English_words = 20
+
 TglangLanguage = (
     'OTHER',  # TGLANG_LANGUAGE_OTHER,
     'C',  # TGLANG_LANGUAGE_C,
@@ -56,52 +58,58 @@ lang2idx['VERILOG'] = 112
 lang2idx['HASKELL'] = 113
 
 keywords = {
-'#', '(', ')', '-', '/', ':', ';', '<',
-'=', '>', '[', '\\', ']', '_', '{', '}',
-'",', '()', ')\n', '))', ');', ',\n', '->',
-'//', ':\n', ';\n', '<-', '<<', '<=', '==', '=>',
-'>\n', '>=', '>>', ']\n', 'as', 'do', 'if', 'in',
-'is', 'or', '{\n', '}\n', '} ', '},', '")\n',
-'",\n', '", ', '","', '": ', '":"', '()\n', '() ', '();',
-') {', '))\n', '):\n', ');\n', '---', '// ', '000', ': "',
-': [', ': {', '===', 'and', 'asm', 'def', 'del', 'end',
-'for', 'int', 'let', 'new', 'not', 'str', 'try', 'var',
-'xor', '},\n', '    ', '####', '() {', ') =>', ') {\n',
-'));\n', '----', '.log', '0000', ': {\n', '====', '=> {', 'auto',
-'bool', 'case', 'char', 'elif', 'else', 'enum', 'from', 'goto',
-'http', 'if (', 'int ', 'int(', 'list', 'load', 'long', 'main',
-'name', 'None', 'null', 'pass', 'self', 'size', 'this', 'true',
-'True', 'void', 'with', '() {\n', '.log(', '_name', 'async', 'await',
-'break', 'catch', 'class', 'compl', 'const', 'count', 'false', 'False',
-'float', 'https', 'index', 'input', 'layer', 'print', 'quest', 'raise',
-'range', 'send_', 'short', 'sudo ', 'super', 'throw', 'union', 'using',
-'value', 'while', 'width', ') => {', '.print', 'assert', 'break;', 'Button',
-'CFrame', 'config', 'contex', 'cout<<', 'create', 'delete', 'double', 'except',
-'export', 'extern', 'filter', 'friend', 'global', 'handle', 'header', 'import',
-'inline', 'is_bot', 'lambda', 'main()', 'print(', 'public', 'return', 'signed',
-'sizeof', 'static', 'string', 'String', 'struct', 'switch', 'System', 'type":',
-'typeof', 'width:', '} else', '"https:', '#define', ') => {\n', '2023-10', 'Command',
-'command', 'console', 'cout <<', 'default', 'extends', 'finally', 'include', 'install',
-'mutable', 'nullptr', 'package', 'println', 'private', 'Session', 'typedef', 'virtual',
-'        ', ' cout <<', ' else {\n', '########', '#define ', '--------', '00000000', '========',
-'continue', 'contract', 'debugger', 'decltype', 'for(int ', 'function', 'https://', 'main() {',
-'main(){\n', 'message_', 'operator', 'position', 'printf("', 'println(', 'register', 'template',
-'typename', 'unsigned', 'username', '} else {', '(int i = ', 'Console\\',
-'for (int ', 'for i in ', 'function(', 'interface', 'main() {\n', 'namespace', 'protected', '<iostream>',
-'Character.', 'implements', 'instanceof', 'location =', 'new HByte()', 'static_cast', '            ', '------------',
-'000000000000', 'console.log(', 'getElementById(', 'using namespace', '################', '----------------', '0000000000000000',
-'================', 'reinterpret_cast', '#include <iostream>', 'System.out.println(', '                    ', '"type": "supergroup"',
-'####################', '--------------------', '////////////////////', '00000000000000000000', '====================', 'Players.LocalPlayer.', 'using namespace std;',
-"<< endl;\n", "in (",}
+    '#', '(', ')', '-', '/', ':', ';', '<',
+    '=', '>', '[', '\\', ']', '_', '{', '}',
+    '",', '()', ')\n', '))', ');', ',\n', '->',
+    '//', ':\n', ';\n', '<-', '<<', '<=', '==', '=>',
+    '>\n', '>=', '>>', ']\n', 'as', 'do', 'if', 'in',
+    'is', 'or', '{\n', '}\n', '} ', '},', '")\n',
+    '",\n', '", ', '","', '": ', '":"', '()\n', '() ', '();',
+    ') {', '))\n', '):\n', ');\n', '---', '// ', '000', ': "',
+    ': [', ': {', '===', 'and', 'asm', 'def', 'del', 'end',
+    'for', 'int', 'let', 'new', 'not', 'str', 'try', 'var',
+    'xor', '},\n', '    ', '####', '() {', ') =>', ') {\n',
+    '));\n', '----', '.log', '0000', ': {\n', '====', '=> {', 'auto',
+    'bool', 'case', 'char', 'elif', 'else', 'enum', 'from', 'goto',
+    'http', 'if (', 'int ', 'int(', 'list', 'load', 'long', 'main',
+    'name', 'None', 'null', 'pass', 'self', 'size', 'this', 'true',
+    'True', 'void', 'with', '() {\n', '.log(', '_name', 'async', 'await',
+    'break', 'catch', 'class', 'compl', 'const', 'count', 'false', 'False',
+    'float', 'https', 'index', 'input', 'layer', 'print', 'quest', 'raise',
+    'range', 'send_', 'short', 'sudo ', 'super', 'throw', 'union', 'using',
+    'value', 'while', 'width', ') => {', '.print', 'assert', 'break;', 'Button',
+    'CFrame', 'config', 'contex', 'cout<<', 'create', 'delete', 'double', 'except',
+    'export', 'extern', 'filter', 'friend', 'global', 'handle', 'header', 'import',
+    'inline', 'is_bot', 'lambda', 'main()', 'print(', 'public', 'return', 'signed',
+    'sizeof', 'static', 'string', 'String', 'struct', 'switch', 'System', 'type":',
+    'typeof', 'width:', '} else', '"https:', '#define', ') => {\n', '2023-10', 'Command',
+    'command', 'console', 'cout <<', 'default', 'extends', 'finally', 'include', 'install',
+    'mutable', 'nullptr', 'package', 'println', 'private', 'Session', 'typedef', 'virtual',
+    '        ', ' cout <<', ' else {\n', '########', '#define ', '--------', '00000000', '========',
+    'continue', 'contract', 'debugger', 'decltype', 'for(int ', 'function', 'https://', 'main() {',
+    'main(){\n', 'message_', 'operator', 'position', 'printf("', 'println(', 'register', 'template',
+    'typename', 'unsigned', 'username', '} else {', '(int i = ', 'Console\\',
+    'for (int ', 'for i in ', 'function(', 'interface', 'main() {\n', 'namespace', 'protected', '<iostream>',
+    'Character.', 'implements', 'instanceof', 'location =', 'new HByte()', 'static_cast', '            ', '------------',
+    '000000000000', 'console.log(', 'getElementById(', 'using namespace', '################', '----------------', '0000000000000000',
+    '================', 'reinterpret_cast', '#include <iostream>', 'System.out.println(', '                    ', '"type": "supergroup"',
+    '####################', '--------------------', '////////////////////', '00000000000000000000', '====================', 'Players.LocalPlayer.', 'using namespace std;',
+    "<< endl;\n", "in (", }
+
+common_English_words = ['the', 'be', 'of', 'to', 'in', 'I', 'you', 'it', 'have', 'that', 'do', 'he', 'with', 'on', 'this', "n't", 'we', 'that', 'but', 'they', 'say', 'at', 'what', 'his', 'go', 'by', 'get', 'she', 'my', 'can', 'know', 'me', 'your', 'who', 'about', 'their', 'will', 'so', 'would', 'make', 'just', 'up', 'think', 'time',
+                        'there', 'see', 'her', 'out', 'one', 'come', 'people', 'take', 'year', 'him', 'them', 'some', 'want', 'how', 'when', 'which', 'now', 'like', 'other', 'could', 'our', 'into', 'here', 'then', 'than', 'look', 'way', 'more', 'these', 'no', 'thing', 'well', 'because', 'also', 'two', 'use', 'tell', 'good', 'first', 'man', 'day', 'find', 'give', 'more']
+tmp = common_English_words[:num_English_words]
+text_keywords = [' '+s+' ' for s in tmp]+[' '+s+'.' for s in tmp]
+text_keywords = list(set(text_keywords))
 
 keywords = list(set(keywords))
 keywords.sort(key=str.lower)
 
 kmax = max(len(k) for k in keywords)
-keyword2idx = {k:i for i,k in enumerate(keywords)}
+keyword2idx = {k: i for i, k in enumerate(keywords)}
 
-print("keywords:\n%s"%(keywords))
-print("max keywords len (kmax): %d"%(kmax))
+print("keywords:\n%s" % (keywords))
+print("max keywords len (kmax): %d" % (kmax))
 
 '''
 # C keywords
