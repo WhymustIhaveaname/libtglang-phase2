@@ -75,6 +75,14 @@ void blas2(const float *W,float *x,const float *b,int m,int n,float *ans){
     }
 }
 
+void relu(float *x, int n){
+    for(int i=0;i<n;i++){
+        if(x[i]<0.0){
+            x[i]=0.0;
+        }
+    }
+}
+
 int main(int argc, char *argv[]) {
     //const char *names[] = { "joe", "bob", "betty", NULL };
     struct custom_set *s, *tmp, *keywords = NULL;
@@ -101,6 +109,7 @@ int main(int argc, char *argv[]) {
 
     float ans1[sizeof(bias1)/sizeof(bias1[0])]={0.0};
     blas2(&weight1[0][0],freq,bias1,sizeof(bias1)/sizeof(bias1[0]),keywordNum,ans1);
+    relu(ans1,sizeof(bias1)/sizeof(bias1[0]));
 
     float ans2[sizeof(bias2)/sizeof(bias2[0])]={0.0};
     blas2(&weight2[0][0],ans1,bias2,sizeof(bias2)/sizeof(bias2[0]),keywordNum,ans2);
