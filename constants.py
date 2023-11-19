@@ -126,7 +126,8 @@ print("max keywords len (kmax): %d" % (kmax))
 f = open('keywords.h', 'w')
 f.write('const char *keywordsList[]={')
 for word in keywords:
-    word = repr(word)
+    word = repr(word)  # 去掉转义，比如\n
+    word = word[1:len(word)-1]  # 去掉转义的同时会把两边的引号显现出来，把它去掉
     if '"' in word or "'" in word:
         i = 0
         while i < len(word):
@@ -139,6 +140,7 @@ f.write('};\n')
 f.write('const char *text_keywordsList[]={')
 for word in text_keywords:
     word = repr(word)
+    word = word[1:len(word)-1]
     if '"' in word or "'" in word:
         i = 0
         while i < len(word):

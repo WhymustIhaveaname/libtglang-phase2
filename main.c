@@ -86,7 +86,7 @@ int main(int argc, char *argv[]) {
         HASH_ADD_STR(keywords, name, s);
     }
 
-    const char *input1="int i = 0;, http://";
+    const char *input1="int i = 3;\ndef f():";
     const char *input2="Here is an example of text.";
 
     float freq[keywordNum]={0.0};
@@ -94,8 +94,9 @@ int main(int argc, char *argv[]) {
     //count_keyword_frequency(input2,keywords,freq);
 
     for(int i=0;i<sizeof(freq)/sizeof(freq[0]);i++){
-        if (freq[i]>0)
-            printf("%f  ", freq[i]);
+        if(freq[i]>0){
+            printf("%d %f %s ", i,freq[i],keywords[i]);
+        }
     }
     printf("\n");
 
