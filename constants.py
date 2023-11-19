@@ -66,53 +66,53 @@ lang2idx['HASKELL'] = 113
 # These are the keywords which are important in text/code classify, order by importance descending.
 # each line is 10 keywords
 text_keywords = ['=', '}', '{\n', ':', '_', '(', '}\n', '-', '/', 'print(',
-    '": ', '()', ');', '    ', 'in', 'sudo ', ';', '<', 'or', '// ',
-    'install', '","', ');\n', 'import', ' to ', '//', '0000', 'as', ']', '000',
-    '>', '{', 'name', ',\n', 'def', '()\n', '---', 'return', '();', 'do',
-    '----', '\\', 'https://', ' of ', '#', 'not', 'is', 'and', '},', 'package',
-    'await', ';\n', '>\n', '))', 'else', 'const', '--------------------', 'console.log(', '},\n', 'if', 'var',
-    '_name', 'list', 'input', ')', '):\n', '=>', '", ', 'http', 'main', 'auto',
-    'string', ']\n', 'True', '->', 'send_', ' on ', 'String', 'class', 'interface', ' no ',
-    ' at ', '",\n', 'delete', 'new', 'export', 'Players.LocalPlayer.', 'Console\\', '2023-10', 'from', ' with ',
-    '[', 'size', 'config', 'quest', 'load', 'Character.', 'let', 'str', 'async', 'extern',
-    'del', 'self', ' then ', ' by ', 'println(', 'float', 'try', ')\n', 'extends', 'public',
-    '----------------', 'int', ' do ', ':\n', '==', 'value', ': {', 'print', 'index', 'end',
-    ' in ', ' into ', ' up ', '>>', 'pass', '<<', 'Command', 'elif', '------------', '====',
-    'assert', 'null', 'xor', ' like ', '.log(', 'enum', ': "', ' will ', '<iostream>', 'except',
-    'char', 'double', ' than ', '":"', 'for', ' out ', 'asm', 'CFrame', 'break', 'filter',
-    'signed', '////////////////////', 'debugger', 'in (', 'System', 'layer', 'finally', ' also ', 'main()', 'cout <<',
-    '#define ', 'username', 'https', '                    ', ' this ', 'int ', '====================', ' cout <<', 'command', ' could ',
-    ' we ', 'header', '<< endl;\n', 'short']
+                 '": ', '()', ');', '    ', 'in', 'sudo ', ';', '<', 'or', '// ',
+                 'install', '","', ');\n', 'import', ' to ', '//', '0000', 'as', ']', '000',
+                 '>', '{', 'name', ',\n', 'def', '()\n', '---', 'return', '();', 'do',
+                 '----', '\\', 'https://', ' of ', '#', 'not', 'is', 'and', '},', 'package',
+                 'await', ';\n', '>\n', '))', 'else', 'const', '--------------------', 'console.log(', '},\n', 'if', 'var',
+                 '_name', 'list', 'input', ')', '):\n', '=>', '", ', 'http', 'main', 'auto',
+                 'string', ']\n', 'True', '->', 'send_', ' on ', 'String', 'class', 'interface', ' no ',
+                 ' at ', '",\n', 'delete', 'new', 'export', 'Players.LocalPlayer.', 'Console\\', '2023-10', 'from', ' with ',
+                 '[', 'size', 'config', 'quest', 'load', 'Character.', 'let', 'str', 'async', 'extern',
+                 'del', 'self', ' then ', ' by ', 'println(', 'float', 'try', ')\n', 'extends', 'public',
+                 '----------------', 'int', ' do ', ':\n', '==', 'value', ': {', 'print', 'index', 'end',
+                 ' in ', ' into ', ' up ', '>>', 'pass', '<<', 'Command', 'elif', '------------', '====',
+                 'assert', 'null', 'xor', ' like ', '.log(', 'enum', ': "', ' will ', '<iostream>', 'except',
+                 'char', 'double', ' than ', '":"', 'for', ' out ', 'asm', 'CFrame', 'break', 'filter',
+                 'signed', '////////////////////', 'debugger', 'in (', 'System', 'layer', 'finally', ' also ', 'main()', 'cout <<',
+                 '#define ', 'username', 'https', '                    ', ' this ', 'int ', '====================', ' cout <<', 'command', ' could ',
+                 ' we ', 'header', '<< endl;\n', 'short']
 
-text_keywords = list(set(text_keywords[0:40])) # I selected only the first 40
-text_keywords = [" %s "%(i) for i in text_keywords]
+text_keywords = list(set(text_keywords[0:40]))  # I selected only the first 40
+text_keywords = [" %s " % (i) for i in text_keywords]
 ktextmax = max(len(k) for k in text_keywords)
 
-print("%d text_keywords: %s"%(len(text_keywords),text_keywords))
+print("%d text_keywords: %s" % (len(text_keywords), text_keywords))
 print("max text_keywords len (ktextmax): %d" % (ktextmax))
 
 # These are the keywords which are important in code classify, order by importance descending.
 # each line is 10 keywords
 keywords = ['):\n', '",\n', ');\n', '-', '(', '_', ':', '/', ';\n', '}',
-    '<', ' = ', '    ', '0000', ')', '=', ';', '>', 'int ', '": ',
-    'in', 'const', 'print(', ':\n', ');', 'end', ' {\n ', ') {\n', '","', 'public',
-    '}\n', 'new', '      ', ')\n', '        ', 'as', '->', '=>', '{\n',
-    'console.log(', 'function', '[', 'let', 'int', ']', 'var', 'import', 'string', 'void',
-    '()', 'or', ',\n', '();', 'await', 'String', 'contract', '>\n', '()\n', '\\',
-    'load', ' import ', 'sudo ', 'class', ' { ', '<<', ') {', 'contex', 'System.out.println(', ') =>',
-    'export', 'return', ' } ', 'width:', 'include', 'quest', 'https://', ' < ', '#include <iostream>',
-    'struct', 'auto', '} ', '},', '_name', ') => {\n', 'false', 'cout <<', 'using', 'default',
-    'println', '            ', 'main() {\n', 'this', 'is', ' install ', 'CFrame', 'Character.', ' > ', 'printf("',
-    'function(', 'static', '000', 'inline', 'width', 'Players.LocalPlayer.', 'using namespace std;', 'self', '<-', ' // ',
-    ': "', 'print', 'https', 'config', 'enum', 'package', '// ', 'header', 'interface', 'template',
-    'extends', '>>', 'extern', 'break;', 'true', 'println(', 'goto', 'Session', 'send_', 'mutable',
-    'try', 'if (', ' );\n ', ' cout <<', 'Command', '//', 'layer', '<< endl;\n', '#define ', 'cout<<',
-    '() {', 'install', ': {', 'sizeof', 'do', ' _ ', ': [', ' do ', 'assert', 'friend',
-    '},\n', '#', 'private', 'value', '", ', 'short', '<iostream>', 'getElementById(', 'command', '.log(',
-    'typedef', '() ', '));\n', 'virtual', ' ( ', 'finally', 'xor', 'if', 'implements', 'location =',
-    ' as ', 'asm', 'null', 'str', 'compl', 'union', 'break', 'global', 'nullptr', 'typename',
-    '                    ', ' ] ', '----', ' - ', 'catch', 'typeof', 'operator', ' ; ', '--------', 'in (',
-    'username', '() {\n', ') => {', '))', 'debugger', 'else', 'main', 'name', 'True', '////////////////////', '===', 'double', '{']
+            '<', ' = ', '    ', '0000', ')', '=', ';', '>', 'int ', '": ',
+            'in', 'const', 'print(', ':\n', ');', 'end', ' {\n ', ') {\n', '","', 'public',
+            '}\n', 'new', '      ', ')\n', '        ', 'as', '->', '=>', '{\n',
+            'console.log(', 'function', '[', 'let', 'int', ']', 'var', 'import', 'string', 'void',
+            '()', 'or', ',\n', '();', 'await', 'String', 'contract', '>\n', '()\n', '\\',
+            'load', ' import ', 'sudo ', 'class', ' { ', '<<', ') {', 'contex', 'System.out.println(', ') =>',
+            'export', 'return', ' } ', 'width:', 'include', 'quest', 'https://', ' < ', '#include <iostream>',
+            'struct', 'auto', '} ', '},', '_name', ') => {\n', 'false', 'cout <<', 'using', 'default',
+            'println', '            ', 'main() {\n', 'this', 'is', ' install ', 'CFrame', 'Character.', ' > ', 'printf("',
+            'function(', 'static', '000', 'inline', 'width', 'Players.LocalPlayer.', 'using namespace std;', 'self', '<-', ' // ',
+            ': "', 'print', 'https', 'config', 'enum', 'package', '// ', 'header', 'interface', 'template',
+            'extends', '>>', 'extern', 'break;', 'true', 'println(', 'goto', 'Session', 'send_', 'mutable',
+            'try', 'if (', ' );\n ', ' cout <<', 'Command', '//', 'layer', '<< endl;\n', '#define ', 'cout<<',
+            '() {', 'install', ': {', 'sizeof', 'do', ' _ ', ': [', ' do ', 'assert', 'friend',
+            '},\n', '#', 'private', 'value', '", ', 'short', '<iostream>', 'getElementById(', 'command', '.log(',
+            'typedef', '() ', '));\n', 'virtual', ' ( ', 'finally', 'xor', 'if', 'implements', 'location =',
+            ' as ', 'asm', 'null', 'str', 'compl', 'union', 'break', 'global', 'nullptr', 'typename',
+            '                    ', ' ] ', '----', ' - ', 'catch', 'typeof', 'operator', ' ; ', '--------', 'in (',
+            'username', '() {\n', ') => {', '))', 'debugger', 'else', 'main', 'name', 'True', '////////////////////', '===', 'double', '{']
 
 keywords = list(set(keywords))
 keywords.sort(key=str.lower)
@@ -120,8 +120,37 @@ keywords.sort(key=str.lower)
 kmax = max(len(k) for k in keywords)
 keyword2idx = {k: i for i, k in enumerate(keywords)}
 
-print("%d keywords: %s"%(len(keywords),keywords))
+print("%d keywords: %s" % (len(keywords), keywords))
 print("max keywords len (kmax): %d" % (kmax))
+
+f = open('keywords.h', 'w')
+f.write('const char *keywordsList[]={')
+for word in keywords:
+    word = repr(word)  # 去掉转义，比如\n
+    word = word[1:len(word)-1]  # 去掉转义的同时会把两边的引号显现出来，把它去掉
+    if '"' in word or "'" in word:
+        i = 0
+        while i < len(word):
+            if word[i] == '"' or word[i] == "'":
+                word = word[:i]+'\\'+word[i:]
+                i += 1
+            i += 1
+    f.write('"'+word+'", ')
+f.write('};\n')
+f.write('const char *text_keywordsList[]={')
+for word in text_keywords:
+    word = repr(word)
+    word = word[1:len(word)-1]
+    if '"' in word or "'" in word:
+        i = 0
+        while i < len(word):
+            if word[i] == '"' or word[i] == "'":
+                word = word[:i]+'\\'+word[i:]
+                i += 1
+            i += 1
+    f.write('"'+word+'", ')
+f.write('};\n')
+f.close()
 
 '''
 # keywords = [

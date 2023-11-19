@@ -23,31 +23,24 @@ void count_keyword_frequency(const char *input, struct hash_set *keywords, float
         count the appearence of keywords in input and write the result into freq
     */
     int n=strlen(input);
-    int *inkeywords=(int *)malloc(n*sizeof(int));
-    for(int i=0;i<n;i++){
-        inkeywords[i]=0;
-    }
-    for(int l=KEYWORDLEN;l>=1;l--){
+    char *inkeywords=(char *)calloc(n,sizeof(char));
+    for(int l=KEYWORDLEN;l>0;l--){
         for(int i=0;i<=n-l;i++){
             int flag=0;
-            char substr[KEYWORDLEN+1]; //substr=input[i:i+l]
-            for(int j=0;j<=l-1;j++){
+            char substr[KEYWORDLEN+1]={'\0'}; //substr=input[i:i+l]
+            for(int j=0;j<l;j++){
                 if(inkeywords[i+j]==1){
                     flag=1;
                     break;
                 }
                 substr[j]=input[i+j];
             }
-            if(flag==1){
-                continue;
-            }
-            substr[i+l]='\0';
+            if(flag==1){continue;}
+
             struct hash_set *s=NULL;
             HASH_FIND_STR(keywords, substr, s);
             if(s){
-                for(int j=0;j<=l-1;j++){
-                    inkeywords[i+j]=1;
-                }
+                for(int j=0;j<l;j++){inkeywords[i+j]=1;}
                 freq[s->id]=freq[s->id]+1.0;
             }
         }
