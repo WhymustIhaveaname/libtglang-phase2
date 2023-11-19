@@ -37,7 +37,7 @@ def load_data(ratio=10):
     trainset = []
     testset = []
     counter = {i: 0 for i in range(29)}
-    for text, type29 in tqdm(data[:len(data)//100]):
+    for text, type29 in tqdm(data[:len(data)]):
         counter[type29] += 1
         if counter[type29] % ratio == 0:
             testset.append(
