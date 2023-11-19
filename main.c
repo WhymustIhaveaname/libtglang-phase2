@@ -3,13 +3,14 @@
 #include <stdio.h>   /* printf */
 #include "uthash.h"
 #include "parameters.h"
+#include "keywords.h"
 
-#define keywordLen 25 //最长关键词长度
-#define keywordNum 4 //关键词个数
-const char *keywordsList[]={ "==", "=", "!=", ";" };
-const float weight1[keywordNum]={-0.6,0.1,0.3,0.5};
-const float weight2[][keywordNum]={{1.0,2.0,2.5,0.4},{-0.5,-0.9,0.0,-0.2}};
-const float bias2[]={-0.5,1.0};
+#define keywordLen 20 //最长关键词长度
+#define keywordNum 321 //关键词个数
+//const char *keywordsList[]={ "==", "=", "!=", ";" };
+//const float weight1[keywordNum]={-0.6,0.1,0.3,0.5};
+//const float weight2[][keywordNum]={{1.0,2.0,2.5,0.4},{-0.5,-0.9,0.0,-0.2}};
+//const float bias2[]={-0.5,1.0};
 
 struct custom_set {
     char name[keywordLen];             /* key (string is WITHIN the structure) */
@@ -65,12 +66,12 @@ float blas1(const float *w, float *x, float b, int n){
     return ans;
 }
 
-void blas2(const float (*W)[keywordNum],float *x,const float *b,int m,int n,float *ans){
+void blas2(const float *W,float *x,const float *b,int m,int n,float *ans){
     //write W*x+b into ans
     for(int i=0;i<m;i++){
         ans[i]=b[i];
         for(int j=0;j<n;j++){
-            ans[i]=ans[i]+W[i][j]*x[j];
+            ans[i]=ans[i]+W[i*n+j]*x[j];
         }
     }
 }
@@ -85,24 +86,28 @@ int main(int argc, char *argv[]) {
         HASH_ADD_STR(keywords, name, s);
     }
 
-    const char *input1="Here = an example of code;;";
+    const char *input1="int i = 0;, http://";
     const char *input2="Here is an example of text.";
 
     float freq[keywordNum]={0.0};
     count_keyword_frequency(input1,keywords,freq);
     //count_keyword_frequency(input2,keywords,freq);
 
-    for(int i=0;i<=3;i++){
-        printf("%f  ", freq[i]);
+    for(int i=0;i<sizeof(freq)/sizeof(freq[0]);i++){
+        if (freq[i]>0)
+            printf("%f  ", freq[i]);
     }
     printf("\n");
 
-    float ans1=blas1(weight1,freq,0,keywordNum);
-    printf("%f\n", ans1);
+    float ans1[sizeof(bias1)/sizeof(bias1[0])]={0.0};
+    blas2(&weight1[0][0],freq,bias1,sizeof(bias1)/sizeof(bias1[0]),keywordNum,ans1);
 
-    float ans2[2]={0.0};
-    blas2(weight2,freq,bias2,sizeof(bias2)/sizeof(bias2[0]),keywordNum,ans2);
-    printf("%f\n", ans2[1]);
+    float ans2[sizeof(bias2)/sizeof(bias2[0])]={0.0};
+    blas2(&weight2[0][0],ans1,bias2,sizeof(bias2)/sizeof(bias2[0]),keywordNum,ans2);
+
+    for(int i=0;i<sizeof(bias2)/sizeof(bias2[0]);i++){
+        printf("%f\n", ans2[i]);
+    }
 
     HASH_FIND_STR(keywords, ";", s);
     if (s) printf(";'s id is %d\n", s->id);

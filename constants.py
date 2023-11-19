@@ -66,29 +66,29 @@ lang2idx['HASKELL'] = 113
 # These are the keywords which are important in text/code classify, order by importance descending.
 # each line is 10 keywords
 text_keywords = ['=', '}', '{\n', ':', '_', '(', '}\n', '-', '/', 'print(',
-    '": ', '()', ');', '    ', 'in', 'sudo ', ';', '<', 'or', '// ',
-    'install', '","', ');\n', 'import', ' to ', '//', '0000', 'as', ']', '000',
-    '>', '{', 'name', ',\n', 'def', '()\n', '---', 'return', '();', 'do',
-    '----', '\\', 'https://', ' of ', '#', 'not', 'is', 'and', '},', 'package',
-    'await', ';\n', '>\n', '))', 'else', 'const', '--------------------', 'console.log(', '},\n', 'if', 'var',
-    '_name', 'list', 'input', ')', '):\n', '=>', '", ', 'http', 'main', 'auto',
-    'string', ']\n', 'True', '->', 'send_', ' on ', 'String', 'class', 'interface', ' no ',
-    ' at ', '",\n', 'delete', 'new', 'export', 'Players.LocalPlayer.', 'Console\\', '2023-10', 'from', ' with ',
-    '[', 'size', 'config', 'quest', 'load', 'Character.', 'let', 'str', 'async', 'extern',
-    'del', 'self', ' then ', ' by ', 'println(', 'float', 'try', ')\n', 'extends', 'public',
-    '----------------', 'int', ' do ', ':\n', '==', 'value', ': {', 'print', 'index', 'end',
-    ' in ', ' into ', ' up ', '>>', 'pass', '<<', 'Command', 'elif', '------------', '====',
-    'assert', 'null', 'xor', ' like ', '.log(', 'enum', ': "', ' will ', '<iostream>', 'except',
-    'char', 'double', ' than ', '":"', 'for', ' out ', 'asm', 'CFrame', 'break', 'filter',
-    'signed', '////////////////////', 'debugger', 'in (', 'System', 'layer', 'finally', ' also ', 'main()', 'cout <<',
-    '#define ', 'username', 'https', '                    ', ' this ', 'int ', '====================', ' cout <<', 'command', ' could ',
-    ' we ', 'header', '<< endl;\n', 'short']
+                 '": ', '()', ');', '    ', 'in', 'sudo ', ';', '<', 'or', '// ',
+                 'install', '","', ');\n', 'import', ' to ', '//', '0000', 'as', ']', '000',
+                 '>', '{', 'name', ',\n', 'def', '()\n', '---', 'return', '();', 'do',
+                 '----', '\\', 'https://', ' of ', '#', 'not', 'is', 'and', '},', 'package',
+                 'await', ';\n', '>\n', '))', 'else', 'const', '--------------------', 'console.log(', '},\n', 'if', 'var',
+                 '_name', 'list', 'input', ')', '):\n', '=>', '", ', 'http', 'main', 'auto',
+                 'string', ']\n', 'True', '->', 'send_', ' on ', 'String', 'class', 'interface', ' no ',
+                 ' at ', '",\n', 'delete', 'new', 'export', 'Players.LocalPlayer.', 'Console\\', '2023-10', 'from', ' with ',
+                 '[', 'size', 'config', 'quest', 'load', 'Character.', 'let', 'str', 'async', 'extern',
+                 'del', 'self', ' then ', ' by ', 'println(', 'float', 'try', ')\n', 'extends', 'public',
+                 '----------------', 'int', ' do ', ':\n', '==', 'value', ': {', 'print', 'index', 'end',
+                 ' in ', ' into ', ' up ', '>>', 'pass', '<<', 'Command', 'elif', '------------', '====',
+                 'assert', 'null', 'xor', ' like ', '.log(', 'enum', ': "', ' will ', '<iostream>', 'except',
+                 'char', 'double', ' than ', '":"', 'for', ' out ', 'asm', 'CFrame', 'break', 'filter',
+                 'signed', '////////////////////', 'debugger', 'in (', 'System', 'layer', 'finally', ' also ', 'main()', 'cout <<',
+                 '#define ', 'username', 'https', '                    ', ' this ', 'int ', '====================', ' cout <<', 'command', ' could ',
+                 ' we ', 'header', '<< endl;\n', 'short']
 
-text_keywords = list(set(text_keywords[0:40])) # I selected only the first 40
-text_keywords = [" %s "%(i) for i in text_keywords]
+text_keywords = list(set(text_keywords[0:40]))  # I selected only the first 40
+text_keywords = [" %s " % (i) for i in text_keywords]
 num_text_words = len(text_keywords)
 
-print("text_keywords:",text_keywords)
+print("text_keywords:", text_keywords)
 
 keywords = [
     '#', '(', ')', '-', '/', ':', ';', '<',
@@ -136,7 +136,34 @@ keywords.sort(key=str.lower)
 kmax = max(len(k) for k in keywords)
 keyword2idx = {k: i for i, k in enumerate(keywords)}
 
-print("%d keywords:\n%s"%(len(keywords),keywords))
+f = open('keywords.h', 'w')
+f.write('const char *keywordsList[]={')
+for word in keywords:
+    word = repr(word)
+    if '"' in word or "'" in word:
+        i = 0
+        while i < len(word):
+            if word[i] == '"' or word[i] == "'":
+                word = word[:i]+'\\'+word[i:]
+                i += 1
+            i += 1
+    f.write('"'+word+'", ')
+f.write('};\n')
+f.write('const char *text_keywordsList[]={')
+for word in text_keywords:
+    word = repr(word)
+    if '"' in word or "'" in word:
+        i = 0
+        while i < len(word):
+            if word[i] == '"' or word[i] == "'":
+                word = word[:i]+'\\'+word[i:]
+                i += 1
+            i += 1
+    f.write('"'+word+'", ')
+f.write('};\n')
+f.close()
+
+print("%d keywords:\n%s" % (len(keywords), keywords))
 print("max keywords len (kmax): %d" % (kmax))
 
 '''
