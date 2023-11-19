@@ -68,7 +68,7 @@ def traverse_folder(dataset="r1"):
     print("there are %d files, among them %s are codes"%(numfile,numcode))
 
 def stat():
-    data = read_db()
+    data = read_db(seglen=1024*1024)+read_db(seglen=1024*1024,table='datasetd1')
 
     types = [0]*29
     for i,j in data:
@@ -92,5 +92,5 @@ if __name__=="__main__":
     # init_db()
     # traverse_folder(dataset='d1')
     # read_db()
-    # stat()
-    count_nonoccr_keyword()
+    stat()
+    # count_nonoccr_keyword()

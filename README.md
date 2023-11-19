@@ -54,35 +54,33 @@ The longest human language is 11117; the longest code is 4081. Some very long co
 
 We did some simple classification. The languages, their index and #appearing, and the frequency are as follows (sorted by the freq):
 
-|Language   |idx |count|freq|
-|-----------|----|-----|----|
-|      OTHER| 0|19769|91.56%|
-|      SHELL|22|  386|1.79%|
-|     PYTHON|19|  344|1.59%|
-| JAVASCRIPT|11|  201|0.93%|
-|       JSON|12|  159|0.74%|
-|        C++| 2|   72|0.33%|
-|          C| 1|   69|0.32%|
-|       HTML| 9|   69|0.32%|
-|        PHP|17|   68|0.31%|
-|       RUST|21|   49|0.23%|
-|       JAVA|10|   47|0.22%|
-|        SQL|24|   42|0.19%|
-|        CSS| 4|   40|0.19%|
-|        LUA|14|   37|0.17%|
-| TYPESCRIPT|27|   35|0.16%|
-|         C#| 3|   34|0.16%|
-|     KOTLIN|13|   27|0.13%|
-|         GO| 8|   25|0.12%|
-|   SOLIDITY|23|   23|0.11%|
-|      NGINX|15|   22|0.10%|
-|       DART| 5|   15|0.07%|
-|        XML|28|   14|0.06%|
-|     DOCKER| 6|   13|0.06%|
-|         TL|26|   13|0.06%|
-|       FUNC| 7|    5|0.02%|
-|       RUBY|20|    5|0.02%|
-| POWERSHELL|18|    4|0.02%|
-|      SWIFT|25|    3|0.01%|
-|OBJECTIVE_C|16|    2|0.01%|
+|      OTHER| 0|41082|91.80%|
+|      SHELL|22|  765|1.71%|
+|     PYTHON|19|  690|1.54%|
+| JAVASCRIPT|11|  400|0.89%|
+|       JSON|12|  370|0.83%|
+|        C++| 2|  161|0.36%|
+|       HTML| 9|  138|0.31%|
+|        PHP|17|  134|0.30%|
+|          C| 1|  114|0.25%|
+|        SQL|24|   98|0.22%|
+|       JAVA|10|   96|0.21%|
+|       RUST|21|   85|0.19%|
+|         C#| 3|   73|0.16%|
+| TYPESCRIPT|27|   68|0.15%|
+|        LUA|14|   65|0.15%|
+|        CSS| 4|   62|0.14%|
+|         GO| 8|   60|0.13%|
+|     KOTLIN|13|   47|0.11%|
+|     DOCKER| 6|   45|0.10%|
+|   SOLIDITY|23|   42|0.09%|
+|      NGINX|15|   34|0.08%|
+|       DART| 5|   29|0.06%|
+|        XML|28|   29|0.06%|
+|         TL|26|   23|0.05%|
+|       RUBY|20|   16|0.04%|
+| POWERSHELL|18|   15|0.03%|
+|       FUNC| 7|    7|0.02%|
+|      SWIFT|25|    4|0.01%|
+|OBJECTIVE_C|16|    2|0.00%|
 
