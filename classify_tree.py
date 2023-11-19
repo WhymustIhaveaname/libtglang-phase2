@@ -59,11 +59,11 @@ def train01():
                            #verbose=True
                            )
 
-    # trainset,testset = load_data()
-    # with open("loaded_data.pickle",'wb') as f:
-    #     pickle.dump((trainset,testset),f)
-    with open("loaded_data.pickle",'rb') as f:
-        trainset,testset = pickle.load(f)
+    trainset,testset = load_data()
+    with open("loaded_data.pickle",'wb') as f:
+        pickle.dump((trainset,testset),f)
+    # with open("loaded_data.pickle",'rb') as f:
+    #     trainset,testset = pickle.load(f)
     print('human ratio:',sum(1 for i in trainset if i[1]==0)/len(trainset))
     ptrain = Pool([i[0] for i in trainset],label=[0 if i[1]==0 else 1 for i in trainset])
     ptest  = Pool([i[0] for i in testset],label=[0 if i[1]==0 else 1 for i in testset])
@@ -84,12 +84,14 @@ def train01():
     # graph.view()
 
     imp = model.get_feature_importance(data=ptrain)+model.get_feature_importance(data=ptest)
-    print(imp)
     zeroimp = []
     for i,j in enumerate(imp):
         if j==0:
             zeroimp.append(keywords[i])
-    print(zeroimp)
+    print("zero importantce:",zeroimp)
+    imp = [(keywords[i],"%.4f"%(j)) for i,j in enumerate(imp) if j>0]
+    imp.sort(key=lambda x:float(x[1]),reverse=True)
+    print("importance:",imp)
 
 def train29():
     model = CatBoostClassifier(iterations=150,

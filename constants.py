@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-num_English_words = 20
-
 TglangLanguage = (
     'OTHER',  # TGLANG_LANGUAGE_OTHER,
     'C',  # TGLANG_LANGUAGE_C,
@@ -57,7 +55,42 @@ lang2idx['MATLAB'] = 111
 lang2idx['VERILOG'] = 112
 lang2idx['HASKELL'] = 113
 
-keywords = {
+# These are text common words
+# text_keywords = ['the', 'be', 'of', 'to', 'in', 'I', 'you', 'it', 'have', 'that', 'do', 'he', 'with', 'on', 'this', "n't", 'we',
+#     'that', 'but', 'they', 'say', 'at', 'what', 'his', 'go', 'by', 'get', 'she', 'my', 'can', 'know', 'me', 'your', 'who', 'about',
+#     'their', 'will', 'so', 'would', 'make', 'just', 'up', 'think', 'time',
+#     'there', 'see', 'her', 'out', 'one', 'come', 'people', 'take', 'year', 'him', 'them', 'some', 'want', 'how', 'when', 'which', 'now',
+#     'like', 'other', 'could', 'our', 'into', 'here', 'then', 'than', 'look', 'way', 'more', 'these', 'no', 'thing', 'well', 'because',
+#     'also', 'two', 'use', 'tell', 'good', 'first', 'man', 'day', 'find', 'give', 'more']
+
+# These are the keywords which are important in text/code classify, order by importance descending.
+# each line is 10 keywords
+text_keywords = ['=', '}', '{\n', ':', '_', '(', '}\n', '-', '/', 'print(',
+    '": ', '()', ');', '    ', 'in', 'sudo ', ';', '<', 'or', '// ',
+    'install', '","', ');\n', 'import', ' to ', '//', '0000', 'as', ']', '000',
+    '>', '{', 'name', ',\n', 'def', '()\n', '---', 'return', '();', 'do',
+    '----', '\\', 'https://', ' of ', '#', 'not', 'is', 'and', '},', 'package',
+    'await', ';\n', '>\n', '))', 'else', 'const', '--------------------', 'console.log(', '},\n', 'if', 'var',
+    '_name', 'list', 'input', ')', '):\n', '=>', '", ', 'http', 'main', 'auto',
+    'string', ']\n', 'True', '->', 'send_', ' on ', 'String', 'class', 'interface', ' no ',
+    ' at ', '",\n', 'delete', 'new', 'export', 'Players.LocalPlayer.', 'Console\\', '2023-10', 'from', ' with ',
+    '[', 'size', 'config', 'quest', 'load', 'Character.', 'let', 'str', 'async', 'extern',
+    'del', 'self', ' then ', ' by ', 'println(', 'float', 'try', ')\n', 'extends', 'public',
+    '----------------', 'int', ' do ', ':\n', '==', 'value', ': {', 'print', 'index', 'end',
+    ' in ', ' into ', ' up ', '>>', 'pass', '<<', 'Command', 'elif', '------------', '====',
+    'assert', 'null', 'xor', ' like ', '.log(', 'enum', ': "', ' will ', '<iostream>', 'except',
+    'char', 'double', ' than ', '":"', 'for', ' out ', 'asm', 'CFrame', 'break', 'filter',
+    'signed', '////////////////////', 'debugger', 'in (', 'System', 'layer', 'finally', ' also ', 'main()', 'cout <<',
+    '#define ', 'username', 'https', '                    ', ' this ', 'int ', '====================', ' cout <<', 'command', ' could ',
+    ' we ', 'header', '<< endl;\n', 'short']
+
+text_keywords = list(set(text_keywords[0:40])) # I selected only the first 40
+text_keywords = [" %s "%(i) for i in text_keywords]
+num_text_words = len(text_keywords)
+
+print("text_keywords:",text_keywords)
+
+keywords = [
     '#', '(', ')', '-', '/', ':', ';', '<',
     '=', '>', '[', '\\', ']', '_', '{', '}',
     '",', '()', ')\n', '))', ');', ',\n', '->',
@@ -94,13 +127,8 @@ keywords = {
     '000000000000', 'console.log(', 'getElementById(', 'using namespace', '################', '----------------', '0000000000000000',
     '================', 'reinterpret_cast', '#include <iostream>', 'System.out.println(', '                    ', '"type": "supergroup"',
     '####################', '--------------------', '////////////////////', '00000000000000000000', '====================', 'Players.LocalPlayer.', 'using namespace std;',
-    "<< endl;\n", "in (", }
-
-common_English_words = ['the', 'be', 'of', 'to', 'in', 'I', 'you', 'it', 'have', 'that', 'do', 'he', 'with', 'on', 'this', "n't", 'we', 'that', 'but', 'they', 'say', 'at', 'what', 'his', 'go', 'by', 'get', 'she', 'my', 'can', 'know', 'me', 'your', 'who', 'about', 'their', 'will', 'so', 'would', 'make', 'just', 'up', 'think', 'time',
-                        'there', 'see', 'her', 'out', 'one', 'come', 'people', 'take', 'year', 'him', 'them', 'some', 'want', 'how', 'when', 'which', 'now', 'like', 'other', 'could', 'our', 'into', 'here', 'then', 'than', 'look', 'way', 'more', 'these', 'no', 'thing', 'well', 'because', 'also', 'two', 'use', 'tell', 'good', 'first', 'man', 'day', 'find', 'give', 'more']
-tmp = common_English_words[:num_English_words]
-text_keywords = [' '+s+' ' for s in tmp]
-text_keywords = list(set(text_keywords))
+    "<< endl;\n", "in (", ]
+keywords += text_keywords
 
 keywords = list(set(keywords))
 keywords.sort(key=str.lower)
@@ -108,7 +136,7 @@ keywords.sort(key=str.lower)
 kmax = max(len(k) for k in keywords)
 keyword2idx = {k: i for i, k in enumerate(keywords)}
 
-print("keywords:\n%s" % (keywords))
+print("%d keywords:\n%s"%(len(keywords),keywords))
 print("max keywords len (kmax): %d" % (kmax))
 
 '''
