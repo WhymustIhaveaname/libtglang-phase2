@@ -22,7 +22,7 @@ class FClassifier(nn.Module):
         num_classes = len(TglangLanguage)
         self.fc = nn.Sequential(
             nn.Linear(input_size, 32),
-            nn.ReLU(),
+            nn.LeakyReLU(),
             nn.Linear(32, num_classes),
         )
 
