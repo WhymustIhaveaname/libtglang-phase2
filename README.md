@@ -2,12 +2,49 @@
 
 The task is to implement a library that detects the programming and markup language of code snippets from message text. [contest link](https://t.me/contest/346)
 
+## Our Method
+
+Our approch is based on word frequency and fully-connection neural network.
+We first select about 200 __keywords__, then count the frequency of the keywords in the text.
+Then feed this 200 dimension vector into a fully-connection neural network and get the result.
+
+The selection of keywords are done by first select many candidates.
+We count the frequency of 2-tuple, 3-tuple, ..., 20-tuple and use the most common 500 words as the candidates.
+Then we train a random forest and pick out the "impotant" ones (there is a defination of 'importance' in random forest methods).
+Then we write down the keywords in `constants.py` and never touch it again.
+
+To train the fully-connection network, we first label the given dataset and write the result into a SQL database (this is indeed tedious work).
+We use the standard routine in PyTorch to train the network.
+`pytorch2c.py` will write the trained parameters into a '.h' file, i.e. our model is hard-coded in the .so.
+We believe this could make our code super fast.
+
+The complexity of counting the apperance of keywords is O(kn) where n is the legth of the text and k is the maximum length of keywords.
+The complexity of neural network is about O(29ml) where 29 is 29 types and m the number of keywords, l the number of layers.
+We do the matrix multiply by using for loop.
+We believe using BLAS will make the neural network even faster by 200-500 times (because BLAS can take advantage of the vector assemblies).
+
+In the real code, there are actually 2 neural networks, one is to classify the text into human/codes, the other will classify which programming language it is.
+The reason is that we noticed a huge unbalanace in the dataset (see Dataset Properties).
+The golden rule in training classifier is that the ratio #(most common label)/#(most uncommon label) should smaller than 20.
+So we first do a 2-classification, in which the label unbalance is 9:1.
+Then we do the 28-classification of programming languages.
+
 ## File Descriptions
 
 * `constants.py` is basically `tglang.h`.
 * `data_utils.py` loads the dataset into SQLite and reads SQLite out as `[(text, label),...]`, `ml2023dataset.db` is the database it created.
-* `fc_classify.py` trains the classifier.
-* `tglang.pyx` uses the pre-trained classifier and `setup.py` is for compiling it to `.so`.
+* `classify_fc.py` trains the fully-connection classifier. `pytorch2c.py` writes the trained parameters into a C file.
+* `classify_tree` trains a random forest classifier. This classifier will not be used in C code but help us select important keywords.
+* `tglang.pyx`,`setup.py`: deprecated. We tried to compile a '.so' directly from Python but failed.
+
+## Todo List
+
+[x] Wash the dataset and classify them
+[x] Select the keywrods candidates by count the freq of n-tuples.
+[x] Select the keywords using random forest method.
+[ ] Train the neural network using PyTorch.
+[ ] Write the trained parameters into C and compile to .so
+[ ] Write the matrix multiplication in BLAS
 
 ## Dataset Properties
 
