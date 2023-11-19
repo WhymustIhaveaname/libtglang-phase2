@@ -3,14 +3,14 @@
 #include <stdio.h>   /* printf */
 #include "uthash.h"
 #include "tglang.h"
-//#include "parameters.h"
+#include "parameters.h"
 
 #define KEYWORDLEN 25 //最长关键词长度
 #define KEYWORDNUM 4  //关键词个数
 const char *keywords_list[]={ "==", "=", "!=", ";" };
-const float weight1[KEYWORDNUM]={-0.6,0.1,0.3,0.5};
-const float weight2[][KEYWORDNUM]={{1.0,2.0,2.5,0.4},{-0.5,-0.9,0.0,-0.2}};
-const float bias2[]={-0.5,1.0};
+const float weight3[KEYWORDNUM]={-0.6,0.1,0.3,0.5};
+const float weight4[][KEYWORDNUM]={{1.0,2.0,2.5,0.4},{-0.5,-0.9,0.0,-0.2}};
+const float bias4[]={-0.5,1.0};
 
 struct hash_set {
     char name[KEYWORDLEN];     /* key (string is WITHIN the structure) */
@@ -56,6 +56,7 @@ void count_keyword_frequency(const char *input, struct hash_set *keywords, float
 
 float blas1(const float *w, float *x, float b, int n){
     //return w'*x+b
+    //n=len(w)=len(x)
     float ans=b;
     for(int i=0;i<n;i++){
         ans=ans+w[i]*x[i];
@@ -63,12 +64,24 @@ float blas1(const float *w, float *x, float b, int n){
     return ans;
 }
 
-void blas2(const float (*W)[KEYWORDNUM],float *x,const float *b,int m,int n,float *ans){
-    //write W*x+b into ans
+void blas2(const float *W,float *x,const float *b,int m,int n,float *ans){
+    /* write W*x+b into ans
+    m=len(W)=len(b)=len(ans), n=len(W[0])=len(x)
+    float ans1[sizeof(bias1)/sizeof(bias1[0])]={0.0};
+    blas2(&weight1[0][0],freq,bias1,sizeof(bias1)/sizeof(bias1[0]),sizeof(freq)/sizeof(freq[0]),ans1);
+    */
     for(int i=0;i<m;i++){
         ans[i]=b[i];
         for(int j=0;j<n;j++){
-            ans[i]=ans[i]+W[i][j]*x[j];
+            ans[i]=ans[i]+W[i*n+j]*x[j];
+        }
+    }
+}
+
+void relu(float *x, int n){
+    for(int i=0;i<n;i++){
+        if(x[i]<0.0){
+            x[i]=0.0;
         }
     }
 }
@@ -105,7 +118,16 @@ enum TglangLanguage tglang_detect_programming_language(const char *text) {
     }
     printf("\n");
 
-    float ans1=blas1(weight1,freq,0,KEYWORDNUM);
+    float ans1[sizeof(bias1)/sizeof(bias1[0])]={0.0};
+    blas2((const float *)weight1,freq,bias1,sizeof(bias1)/sizeof(bias1[0]),sizeof(freq)/sizeof(freq[0]),ans1);
+    relu(ans1,sizeof(bias1)/sizeof(bias1[0]));
+
+    float ans2[sizeof(bias2)/sizeof(bias2[0])]={0.0};
+    blas2((const float *)weight2,ans1,bias2,sizeof(bias2)/sizeof(bias2[0]),sizeof(ans1)/sizeof(ans1[0]),ans2);
+
+    for(int i=0;i<sizeof(bias2)/sizeof(bias2[0]);i++){
+        printf("%f\n", ans2[i]);
+    }
     // printf("%f\n", ans1);
 
     // float ans2[2]={0.0};
