@@ -108,11 +108,11 @@ int main(int argc, char *argv[]) {
     printf("\n");
 
     float ans1[sizeof(bias1)/sizeof(bias1[0])]={0.0};
-    blas2(&weight1[0][0],freq,bias1,sizeof(bias1)/sizeof(bias1[0]),keywordNum,ans1);
+    blas2(&weight1[0][0],freq,bias1,sizeof(bias1)/sizeof(bias1[0]),sizeof(freq)/sizeof(freq[0]),ans1);
     relu(ans1,sizeof(bias1)/sizeof(bias1[0]));
 
     float ans2[sizeof(bias2)/sizeof(bias2[0])]={0.0};
-    blas2(&weight2[0][0],ans1,bias2,sizeof(bias2)/sizeof(bias2[0]),keywordNum,ans2);
+    blas2(&weight2[0][0],ans1,bias2,sizeof(bias2)/sizeof(bias2[0]),sizeof(ans1)/sizeof(ans1[0]),ans2);
 
     for(int i=0;i<sizeof(bias2)/sizeof(bias2[0]);i++){
         printf("%f\n", ans2[i]);
