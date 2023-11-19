@@ -29,7 +29,7 @@ void count_keyword_frequency(const char *input, struct custom_set *keywords, flo
     for(int l=keywordLen;l>=1;l--){
         for(int i=0;i<=n-l;i++){
             int flag=0;
-            char substr[keywordLen+1]; //substr=input[i:i+l]
+            char substr[keywordLen+1]={'\0'}; //substr=input[i:i+l]
             for(int j=0;j<=l-1;j++){
                 if(inkeywords[i+j]==1){
                     flag=1;
@@ -40,7 +40,6 @@ void count_keyword_frequency(const char *input, struct custom_set *keywords, flo
             if(flag==1){
                 continue;
             }
-            substr[i+l]='\0';
             struct custom_set *s=NULL;
             HASH_FIND_STR(keywords, substr, s);
             if(s){
@@ -86,7 +85,7 @@ int main(int argc, char *argv[]) {
         HASH_ADD_STR(keywords, name, s);
     }
 
-    const char *input1="int i = 3;\ndef f():";
+    const char *input1="int i = 999;\ndef f():";
     const char *input2="Here is an example of text.";
 
     float freq[keywordNum]={0.0};
@@ -95,7 +94,7 @@ int main(int argc, char *argv[]) {
 
     for(int i=0;i<sizeof(freq)/sizeof(freq[0]);i++){
         if(freq[i]>0){
-            printf("%d %f %s ", i,freq[i],keywords[i]);
+            printf("%d %f %s ", i,freq[i]);
         }
     }
     printf("\n");
