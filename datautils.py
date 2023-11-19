@@ -3,6 +3,7 @@
 
 import os
 import sqlite3
+from tqdm import tqdm
 from constants import *
 
 db_name = 'ml2023dataset.db'
@@ -67,6 +68,32 @@ def traverse_folder(dataset="r1"):
     conn.close()
     print("there are %d files, among them %s are codes"%(numfile,numcode))
 
+def test_libtglang(dataset="r1"):
+    conn = sqlite3.connect(db_name)
+    c = conn.cursor()
+    numfile = c.execute("select count(*) from dataset%s;"%(dataset)).fetchone()[0];
+    numcode = c.execute("select count(*) from dataset%s where type01>0;"%(dataset)).fetchone()[0];
+    datas = c.execute("select file_path,type01,type29 from dataset%s;"%(dataset)).fetchall()
+    conn.close()
+    corr01,corr28 = 0,0
+    # for root,dirs,files in tqdm(os.walk("ml2023-%s-dataset"%(dataset))):
+    #     for file in files:
+    #         file_path = os.path.join(root, file)
+    #         c.execute("SELECT type01,type29 from dataset%s where file_path==?;"%(dataset),(file_path,))
+    #         ans01,ans29 = c.fetchone()
+    #         pred = os.popen("./libtglang-tester-r2/build/tglang-tester %s"%(file_path)).read()
+    #         pred = int(pred.strip().split('\n')[-1])
+    #         if (pred==0)==(ans01==0):
+    #             corr01 += 1
+    for file_path,ans01,ans29 in tqdm(datas):
+            pred = os.popen("./libtglang-tester-r2/build/tglang-tester %s"%(file_path)).read()
+            pred = int(pred.strip().split('\n')[-1])
+            if (pred==0)==(ans01==0):
+                corr01 += 1
+    print("numfile, numcode",numfile,numcode)
+    print("text/code correct ratio: %.4f"%(corr01/numfile))
+
+
 def stat():
     data = read_db(seglen=1024*1024)+read_db(seglen=1024*1024,table='datasetd1')
 
@@ -92,5 +119,6 @@ if __name__=="__main__":
     # init_db()
     # traverse_folder(dataset='d1')
     # read_db()
-    stat()
+    # stat()
     # count_nonoccr_keyword()
+    test_libtglang(dataset="r1")
