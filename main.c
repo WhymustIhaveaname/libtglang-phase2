@@ -6,7 +6,7 @@
 #include "keywords.h"
 
 #define keywordLen 20 //最长关键词长度
-#define keywordNum 321 //关键词个数
+#define keywordNum 201 //关键词个数
 //const char *keywordsList[]={ "==", "=", "!=", ";" };
 //const float weight1[keywordNum]={-0.6,0.1,0.3,0.5};
 //const float weight2[][keywordNum]={{1.0,2.0,2.5,0.4},{-0.5,-0.9,0.0,-0.2}};
