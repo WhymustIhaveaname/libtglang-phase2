@@ -2,6 +2,7 @@
 #include <stdlib.h>  /* malloc */
 #include <stdio.h>   /* printf */
 #include "uthash.h"
+#include "parameters.h"
 
 #define keywordLen 25 //最长关键词长度
 #define keywordNum 4 //关键词个数
