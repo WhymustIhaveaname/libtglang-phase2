@@ -107,14 +107,14 @@ def train_a_model(model,criterion,optimizer,traindl,testdl):
             best_testscore = testcorr
             best_model = copy.deepcopy(model)
             print("----new best model!----")
-        print('Epoch %2d, Train: %.6f, %.4f; Test: %.4f' % (
-            epoch+1, totloss/totnum, traincorr*100, testcorr*100))
-        print('\t(test) confusion matrix: %s'%(confusion))
+            print('Epoch %2d, Train: %.6f, %.4f; Test: %.4f' % (
+                epoch+1, totloss/totnum, traincorr*100, testcorr*100))
+            print('\t(test) confusion matrix: %s'%(confusion))
     return best_model
 
 def train01():
     model = FClassifier(output_size=2)
-    optimizer = optim.Adam(model.parameters(), lr=0.0001)
+    optimizer = optim.Adam(model.parameters(), lr=0.0001, weight_decay=0.0001)
 
     # trainset, testset = load_data()
     # with open("datar1d1.pickle", 'wb') as f:
@@ -210,6 +210,7 @@ def save_keywords(f):
     #     if (i+1)%10==0:
     #         f.write("\n")
     # f.write('};\n')
+    print("wrote keywords to",f)
 
 
 def save_nn(model, f):
@@ -227,7 +228,17 @@ def save_nn(model, f):
             f.write('const float bias%d[%d] = {' % (i, len(numbers)))
             f.write(', '.join([str(num) for num in numbers])+'};\n')
             i += 1
+    print("wrote nn parameters to",f)
 
+def check_keyword_freq():
+    conn = sqlite3.connect(db_name)
+    c = conn.cursor()
+    c.execute('select file_path,file_text,type29 from datasetr1 where type29>0 and type29<100 order by id limit 100;')
+    for file_path,file_text,type_29 in c.fetchall():
+        print(file_path)
+        print(text2feature(file_text))
+        print(text2feature2(file_text))
+        input()
 
 if __name__ == "__main__":
     # stat()
