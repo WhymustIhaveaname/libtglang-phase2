@@ -84,7 +84,8 @@ def text2feature2(text):
             i = i+l
     return x
 
-def train_a_model(model,criterion,optimizer,traindl,testdl):
+
+def train_a_model(model, criterion, optimizer, traindl, testdl):
     best_model = None
     best_testscore = 0.0
     for epoch in range(50):
@@ -101,21 +102,23 @@ def train_a_model(model,criterion,optimizer,traindl,testdl):
             totloss += loss.item()
             totnum += len(labels)
 
-        traincorr,_ = test(model, traindl)
-        testcorr,confusion = test(model, testdl)
-        if testcorr>=best_testscore:
+        traincorr, _ = test(model, traindl)
+        testcorr, confusion = test(model, testdl)
+        if testcorr >= best_testscore:
             best_testscore = testcorr
             best_model = copy.deepcopy(model)
             print("----new best model!----")
             print('Epoch %2d, Train: %.6f, %.4f; Test: %.4f' % (
                 epoch+1, totloss/totnum, traincorr*100, testcorr*100))
-            if model.output_size<3:
-                print('\t(test) confusion matrix: %s'%(confusion))
+            if model.output_size < 3:
+                print('\t(test) confusion matrix: %s' % (confusion))
             else:
-                confusion = [(idx2lang[i+1],j,k,l) for i,(j,k,l) in enumerate(confusion)]
-                confusion.sort(key=lambda x: x[1]+x[2],reverse=True)
+                confusion = [(idx2lang[i+1], j, k, l)
+                             for i, (j, k, l) in enumerate(confusion)]
+                confusion.sort(key=lambda x: x[1]+x[2], reverse=True)
                 print(confusion[0:10])
     return best_model
+
 
 def train01():
     model = FClassifier(output_size=2)
@@ -130,18 +133,19 @@ def train01():
     trainset = [(i, j if j == 0 else eins) for i, j in trainset]
     testset = [(i, j if j == 0 else eins) for i, j in testset]
 
-    weight = [sum(1.0 for j,k in trainset if k==i) for i in range(model.output_size)]
+    weight = [sum(1.0 for j, k in trainset if k == i)
+              for i in range(model.output_size)]
     weight = torch.tensor(weight)
     weight = 1/weight
-    weight/= weight.sum()
-    print("weight",weight)
+    weight /= weight.sum()
+    print("weight", weight)
     criterion = nn.CrossEntropyLoss(weight=weight)
 
     traindl = DataLoader(dataset=trainset, batch_size=16,
                          shuffle=True, drop_last=True)
     testdl = DataLoader(dataset=testset, batch_size=16, shuffle=False)
 
-    return train_a_model(model,criterion,optimizer,traindl,testdl)
+    return train_a_model(model, criterion, optimizer, traindl, testdl)
 
 
 def train28():
@@ -158,9 +162,10 @@ def train28():
     traindl = DataLoader(dataset=trainset, batch_size=16,
                          shuffle=True, drop_last=True)
     testdl = DataLoader(dataset=testset, batch_size=16, shuffle=False)
-    print("train data len: %d"%(len(trainset)))
-    
-    ignore_lang = torch.tensor([16,25,7,26,20,18,15,5,28]) # from OBJ_C to XML
+    print("train data len: %d" % (len(trainset)))
+
+    ignore_lang = torch.tensor(
+        [16, 25, 7, 26, 20, 18, 15, 5, 28])  # from OBJ_C to XML
     # weight = [sum(1.0 for j,k in trainset if k==i) for i in range(model.output_size)]
     # weight = torch.tensor(weight)
     # weight = 1/weight
@@ -168,10 +173,10 @@ def train28():
     # weight[ignore_lang-1] = 0.0
     # weight/= weight.sum()
     # weight*= model.output_size
-    print("weight",weight)
+    print("weight", weight)
     criterion = nn.CrossEntropyLoss(weight=weight)
 
-    return train_a_model(model,criterion,optimizer,traindl,testdl)
+    return train_a_model(model, criterion, optimizer, traindl, testdl)
 
 
 def test(model, dl):
@@ -184,18 +189,21 @@ def test(model, dl):
     with torch.no_grad():
         totnum = 0
         corrnum = 0
-        confusion = [[0,0,0] for i in range(model.output_size)] # false positive, false negative, totnumber
+        # false positive, false negative, totnumber
+        confusion = [[0, 0, 0] for i in range(model.output_size)]
         for inputs, labels in dl:
             outputs = model(inputs)
             totnum += len(labels)
             predicted = outputs.argmax(dim=1)
             corrnum += (predicted == labels).sum().item()
             for i in range(model.output_size):
-                confusion[i][2] += (labels==i).sum().item()
-                confusion[i][0] += torch.logical_and(predicted==i,labels!=i).sum().item()
-                confusion[i][1] += torch.logical_and(predicted!=i,labels==i).sum().item()
+                confusion[i][2] += (labels == i).sum().item()
+                confusion[i][0] += torch.logical_and(
+                    predicted == i, labels != i).sum().item()
+                confusion[i][1] += torch.logical_and(
+                    predicted != i, labels == i).sum().item()
     model.train()
-    return corrnum/totnum,confusion
+    return corrnum/totnum, confusion
 
 
 def str_repr(word):
@@ -226,11 +234,11 @@ def save_keywords(f):
     #     if (i+1)%10==0:
     #         f.write("\n")
     # f.write('};\n')
-    print("wrote keywords to",f)
+    print("wrote keywords to", f)
 
 
-def save_nn(netname,model,f):
-    f.write("#define %s_HIDDENSIZE %d\n" % (netname,model.hidden_size))
+def save_nn(netname, model, f):
+    f.write("#define %s_HIDDENSIZE %d\n" % (netname, model.hidden_size))
     i = 1
     for name, parameters in model.named_parameters():
         numbers = parameters.data.tolist()
@@ -244,17 +252,19 @@ def save_nn(netname,model,f):
             f.write('const float %s_b%d[%d] = {' % (netname, i, len(numbers)))
             f.write(', '.join([str(num) for num in numbers])+'};\n')
             i += 1
-    print("wrote nn parameters to",f)
+    print("wrote nn parameters to", f)
+
 
 def check_keyword_freq():
     conn = sqlite3.connect(db_name)
     c = conn.cursor()
-    c.execute('select file_path,file_text,type29 from datasetr1 where type29>0 and type29<100 order by id limit 100;')
-    for file_path,file_text,type_29 in c.fetchall():
+    c.execute('select file_path,file_text,type29 from datasetr1 where type29>10 and type29<100 order by id limit 100;')
+    for file_path, file_text, type_29 in c.fetchall():
         print(file_path)
         print(text2feature(file_text))
         print(text2feature2(file_text))
         input()
+
 
 if __name__ == "__main__":
     # stat()
@@ -264,6 +274,6 @@ if __name__ == "__main__":
     model28 = train28()
     f = open('parameters.h', 'w')
     save_keywords(f)
-    save_nn("net1",model01, f)
-    save_nn("net2",model28, f)
+    save_nn("net1", model01, f)
+    save_nn("net2", model28, f)
     f.close()

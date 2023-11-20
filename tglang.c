@@ -131,11 +131,11 @@ enum TglangLanguage tglang_detect_programming_language(const char *text) {
     //     printf("%f,", freq[i]);
     // }
 
-    // printf("keyword freq in %s: ",text);
-    // for(int i=0;i<KEYWORDNUM;i++){
-    //     printf("%.4f, ", freq[i]);
-    // }
-    // printf("\n");
+    printf("keyword freq in %s: ",text);
+    for(int i=0;i<KEYWORDNUM;i++){
+        printf("%.4f, ", freq[i]);
+    }
+    printf("\n");
 
     // float ans[2];
     // blas2((const float *)weight,freq,bias,2,4,ans);
@@ -166,10 +166,19 @@ int main(int argc, char *argv[]) {
     int keyword_num = sizeof(keywords_list) / sizeof(keywords_list[0]);
     printf("There are %d keywords\n", keyword_num);
 
+    FILE *in = fopen("ml2023-r1-dataset/00/00add14832345aebf61f-CODE.txt", "rb");
+    fseek(in, 0, SEEK_END);
+    long fsize = ftell(in);
+    fseek(in, 0, SEEK_SET);
+
+    char *text = malloc(fsize + 1);
+    fread(text, fsize, 1, in);
+    fclose(in);
+
     const char *input1="<!-- HTML 代码 -->\n<button id=\"myButton\">点击我执行命令</button>\n<div class=\"myClass\">这是一个需要点击的元素</div>";
     const char *input2="Here is an example of text.";
 
-    enum TglangLanguage type = tglang_detect_programming_language(input1);
+    enum TglangLanguage type = tglang_detect_programming_language(text);
     printf("classified as %d\n",type);
 
     return 0;
