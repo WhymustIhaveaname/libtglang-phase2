@@ -111,7 +111,7 @@ void relu(float *x, int n){
 }
 
 enum TglangLanguage fc_classify(const char *text) {
-    struct hash_set *s, *keywords = NULL;
+    struct hash_set *s, *tmp, *keywords = NULL;
     for (int i = 0; i<KEYWORDNUM; i++) {
         s = (struct hash_set *)malloc(sizeof *s);
         strcpy(s->name, keywords_list[i]);
@@ -141,6 +141,11 @@ enum TglangLanguage fc_classify(const char *text) {
         // printf("0/1 classify ans: %.2f, %.2f\n",ans2[0],ans2[1]);
 
         if(ans2[0]>ans2[1]){
+            // free the hash table contents
+            HASH_ITER(hh, keywords, s, tmp) {
+                HASH_DEL(keywords, s);
+                free(s);
+            }
             return TGLANG_LANGUAGE_OTHER;
         }
     }
@@ -157,6 +162,11 @@ enum TglangLanguage fc_classify(const char *text) {
             maxval = bns2[i];
             maxidx = i;
         }
+    }
+    // free the hash table contents
+    HASH_ITER(hh, keywords, s, tmp) {
+        HASH_DEL(keywords, s);
+        free(s);
     }
     return (enum TglangLanguage) maxidx+1;
 }

@@ -75,17 +75,17 @@ def test_libtglang(dataset="r1"):
     conn = sqlite3.connect(db_name)
     c = conn.cursor()
     numfile,numcode = 0,0
-    datas = c.execute("select file_path,type01,type29 from dataset%s where type29>=0 and type29<100;"%(dataset)).fetchall()
+    datas = c.execute("select file_path,type01,type29,len from dataset%s where type29>=0 and type29<100;"%(dataset)).fetchall()
     conn.close()
     corr01,corr28 = 0,0
-    for file_path,ans01,ans29 in tqdm(datas):
+    for file_path,ans01,ans29,length in tqdm(datas):
         numfile += 1
         numcode += ans01
-        pred = os.popen("./libtglang-tester-r2/build/tglang-tester %s"%(file_path)).read()
+        pred = os.popen("./libtglang-tester-r2/build/tglang-tester ./%s"%(file_path)).read()
         try:
             pred = int(pred.strip().split('\n')[-1])
         except:
-            print("error dealing %s, output is %s"%(file_path,pred))
+            print("error dealing %s (len %d), output is %s"%(file_path,length,pred))
             continue
         if (pred==0)==(ans01==0):
             corr01 += 1
