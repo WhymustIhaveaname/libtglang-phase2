@@ -43,6 +43,9 @@ void count_keyword_frequency(const char *input, struct hash_set *keywords, float
     char *inkeywords=(char *)calloc(n,sizeof(char));
     for(int l=KEYWORDLEN;l>0;l--){
         for(int i=0;i<=n-l;i++){
+            while(inkeywords[i]==1){
+                i++;
+            }
             int flag=-1;
             char substr[KEYWORDLEN+1]={'\0'}; //substr=input[i:i+l]
             for(int j=0;j<l;j++){
@@ -123,6 +126,10 @@ enum TglangLanguage tglang_detect_programming_language(const char *text) {
 
     float freq[KEYWORDNUM]={0.0};
     count_keyword_frequency(text,keywords,freq);
+    // printf("freq:\n");
+    // for(int i=0;i<KEYWORDNUM;i++){
+    //     printf("%f,", freq[i]);
+    // }
 
     // printf("keyword freq in %s: ",text);
     // for(int i=0;i<KEYWORDNUM;i++){
@@ -159,7 +166,7 @@ int main(int argc, char *argv[]) {
     int keyword_num = sizeof(keywords_list) / sizeof(keywords_list[0]);
     printf("There are %d keywords\n", keyword_num);
 
-    const char *input1="Here == = != === an example of code;";
+    const char *input1="<!-- HTML 代码 -->\n<button id=\"myButton\">点击我执行命令</button>\n<div class=\"myClass\">这是一个需要点击的元素</div>";
     const char *input2="Here is an example of text.";
 
     enum TglangLanguage type = tglang_detect_programming_language(input1);
