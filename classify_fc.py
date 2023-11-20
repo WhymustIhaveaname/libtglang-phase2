@@ -124,11 +124,11 @@ def train01():
     model = FClassifier(output_size=2)
     optimizer = optim.Adam(model.parameters(), lr=0.0001, weight_decay=0.0001)
 
-    # trainset, testset = load_data()
-    # with open("datar1d1.pickle", 'wb') as f:
-    #     pickle.dump((trainset, testset), f)
-    with open("datar1d1.pickle", 'rb') as f:
-        trainset, testset = pickle.load(f)
+    trainset, testset = load_data()
+    with open("datar1d1.pickle", 'wb') as f:
+        pickle.dump((trainset, testset), f)
+    # with open("datar1d1.pickle", 'rb') as f:
+    #     trainset, testset = pickle.load(f)
     eins = torch.tensor(1, dtype=torch.long)
     trainset = [(i, j if j == 0 else eins) for i, j in trainset]
     testset = [(i, j if j == 0 else eins) for i, j in testset]
@@ -271,11 +271,11 @@ if __name__ == "__main__":
     # stat()
     # trainset,testset = load_data()
     # print(testset[0])
-    check_keyword_freq()
-    # model01 = train01()
-    # model28 = train28()
-    # f = open('parameters.h', 'w')
-    # save_keywords(f)
-    # save_nn("net1", model01, f)
-    # save_nn("net2", model28, f)
-    # f.close()
+    # check_keyword_freq()
+    model01 = train01()
+    model28 = train28()
+    f = open('parameters.h', 'w')
+    save_keywords(f)
+    save_nn("net1", model01, f)
+    save_nn("net2", model28, f)
+    f.close()
