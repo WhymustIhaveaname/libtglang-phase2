@@ -14,5 +14,5 @@ elseif(MSVC)
     add_compile_options(/O2)
 endif()
 
-# add_library(tglang SHARED tglang.c)
-add_executable(tglang tglang.c)
+add_library(tglang SHARED tglang.c)
+#add_executable(tglang tglang.c)

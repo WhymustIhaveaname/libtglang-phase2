@@ -33,7 +33,7 @@ class FClassifier(nn.Module):
 
 
 def load_data(ratio=10):
-    data = read_db()[::100]
+    data = read_db()
     print('totally %d datas' % (len(data)))
     trainset = []
     testset = []
@@ -85,7 +85,7 @@ def text2feature2(text):
 def train01():
     model = FClassifier(output_size=2)
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=0.001)
+    optimizer = optim.Adam(model.parameters(), lr=0.0001)
 
     trainset, testset = load_data()
     with open("datar1.pickle", 'wb') as f:
@@ -101,7 +101,7 @@ def train01():
                          shuffle=True, drop_last=True)
     testdl = DataLoader(dataset=testset, batch_size=16, shuffle=False)
 
-    for epoch in range(5):
+    for epoch in range(10):
         totloss = 0.0
         totnum = 0
         for inputs, labels in traindl:

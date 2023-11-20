@@ -4,12 +4,14 @@
 #include "uthash.h"
 #include "tglang.h"
 #include "parameters.h"
-
-// #define KEYWORDLEN 25 //最长关键词长度
-// #define KEYWORDNUM 4  //关键词个数
+// parameters.h contains
+// #define KEYWORDLEN 25
+// #define KEYWORDNUM 4
 // const char *keywords_list[]={ "==", "=", "!=", ";" };
 // const float weight[][KEYWORDNUM]={{0.0,0.0,0.0,0.0},{1.0,0.5,1.0,0.2}};
 // const float bias[]={0.9,0.0};
+
+#define STRHARDCUT 512
 
 struct hash_set {
     char name[KEYWORDLEN];     /* key (string is WITHIN the structure) */
@@ -36,7 +38,8 @@ void count_keyword_frequency(const char *input, struct hash_set *keywords, float
     /*
         count the appearence of keywords in input and write the result into freq
     */
-    int n=strlen(input);
+    int n = strlen(input);
+    n = n < STRHARDCUT ? n : STRHARDCUT;
     char *inkeywords=(char *)calloc(n,sizeof(char));
     for(int l=KEYWORDLEN;l>0;l--){
         for(int i=0;i<=n-l;i++){

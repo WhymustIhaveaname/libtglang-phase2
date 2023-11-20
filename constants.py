@@ -127,36 +127,14 @@ keyword2idx = {k: i for i, k in enumerate(keywords)}
 print("%d keywords: %s" % (len(keywords), keywords))
 print("max keywords len (kmax): %d" % (kmax))
 
-# f = open('keywords.h', 'w')
-# f.write('const char *keywordsList[]={')
-# for word in keywords:
-#     word = repr(word)  # 去掉转义，比如\n
-#     word = word[1:len(word)-1]  # 去掉转义的同时会把两边的引号显现出来，把它去掉
-#     if '"' in word or "'" in word:
-#         i = 0
-#         while i < len(word):
-#             if word[i] == '"' or word[i] == "'":
-#                 word = word[:i]+'\\'+word[i:]
-#                 i += 1
-#             i += 1
-#     f.write('"'+word+'", ')
-# f.write('};\n')
-# f.write('const char *text_keywordsList[]={')
-# for word in text_keywords:
-#     word = repr(word)
-#     word = word[1:len(word)-1]
-#     if '"' in word or "'" in word:
-#         i = 0
-#         while i < len(word):
-#             if word[i] == '"' or word[i] == "'":
-#                 word = word[:i]+'\\'+word[i:]
-#                 i += 1
-#             i += 1
-#     f.write('"'+word+'", ')
-# f.write('};\n')
-# f.close()
+kwhist = {i:0 for i in range(kmax+1)}
+for k in keywords:
+    kwhist[len(k)] += 1
+print("keywords hist: %s"%(kwhist))
+
 
 '''
+# manually select keywords from freq stats
 # keywords = [
 #     '#', '(', ')', '-', '/', ':', ';', '<',
 #     '=', '>', '[', '\\', ']', '_', '{', '}',
@@ -228,8 +206,4 @@ keywords.update({
     'implements', 'import', 'in', 'instanceof', 'interface', 'let', 'new', 'null', 'package', 'private',
     'protected', 'public', 'return', 'super', 'switch', 'static', 'this', 'throw', 'try', 'true',
     'typeof', 'var', 'void', 'while', 'with', 'yield', })
-
-frequency_ratio = filter_keywords(keywords)
-print('\n')
-print([key for key, _ in frequency_ratio])
 '''
