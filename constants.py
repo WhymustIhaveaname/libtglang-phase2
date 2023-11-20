@@ -132,8 +132,6 @@ keywords += ['await', ]
 keywords = list(set(i for i in keywords if len(i) <= 10))
 keywords.sort(key=str.lower)
 
-print([i for i in keywords if len(i) < 4])
-
 kmax = max(len(k) for k in keywords)
 keyword2idx = {k: i for i, k in enumerate(keywords)}
 

@@ -11,7 +11,7 @@
 // const float weight[][KEYWORDNUM]={{0.0,0.0,0.0,0.0},{1.0,0.5,1.0,0.2}};
 // const float bias[]={0.9,0.0};
 
-#define STRHARDCUT 512
+#define STRHARDCUT 1024
 
 struct hash_set {
     char name[KEYWORDLEN+1];     /* key (string is WITHIN the structure) */
@@ -43,9 +43,6 @@ void count_keyword_frequency(const char *input, struct hash_set *keywords, float
     char *inkeywords=(char *)calloc(n,sizeof(char));
     for(int l=KEYWORDLEN;l>0;l--){
         for(int i=0;i<=n-l;i++){
-            while(inkeywords[i]==1){
-                i++;
-            }
             int flag=-1;
             char substr[KEYWORDLEN+1]={'\0'}; //substr=input[i:i+l]
             for(int j=0;j<l;j++){
@@ -57,6 +54,9 @@ void count_keyword_frequency(const char *input, struct hash_set *keywords, float
             }
             if(flag>=0){
                 i += flag;
+                while(i<n-1 && inkeywords[i+1]==1){
+                    i++;
+                }
                 continue;
             }
 
@@ -142,10 +142,10 @@ enum TglangLanguage fc_classify(const char *text) {
 
         if(ans2[0]>ans2[1]){
             // free the hash table contents
-            HASH_ITER(hh, keywords, s, tmp) {
-                HASH_DEL(keywords, s);
-                free(s);
-            }
+            // HASH_ITER(hh, keywords, s, tmp) {
+            //     HASH_DEL(keywords, s);
+            //     free(s);
+            // }
             return TGLANG_LANGUAGE_OTHER;
         }
     }
@@ -164,10 +164,10 @@ enum TglangLanguage fc_classify(const char *text) {
         }
     }
     // free the hash table contents
-    HASH_ITER(hh, keywords, s, tmp) {
-        HASH_DEL(keywords, s);
-        free(s);
-    }
+    // HASH_ITER(hh, keywords, s, tmp) {
+    //     HASH_DEL(keywords, s);
+    //     free(s);
+    // }
     return (enum TglangLanguage) maxidx+1;
 }
 
@@ -175,28 +175,29 @@ enum TglangLanguage tglang_detect_programming_language(const char *text) {
     return fc_classify(text);
 }
 
-int main(int argc, char *argv[]) {
-    int keyword_num = sizeof(keywords_list) / sizeof(keywords_list[0]);
-    printf("There are %d keywords\n", keyword_num);
+// int main(int argc, char *argv[]) {
+//     int keyword_num = sizeof(keywords_list) / sizeof(keywords_list[0]);
+//     printf("There are %d keywords\n", keyword_num);
     
-    printf("reading %s",argv[1]);
-    FILE *in = fopen(argv[1], "rb");
-    if (in == NULL) {
-        fprintf(stderr, "Failed to open input file %s\n", argv[1]);
-        return 1;
-    }
-    fseek(in, 0, SEEK_END);
-    long fsize = ftell(in);
-    fseek(in, 0, SEEK_SET);
-    char *text = malloc(fsize + 1);
-    fread(text, fsize, 1, in);
-    fclose(in);
-    printf("5\n");
-    text[fsize] = 0;
-    printf("text len: %ld\n",fsize);
+//     // printf("reading %s",argv[1]);
+//     // FILE *in = fopen(argv[1], "rb");
+//     // if (in == NULL) {
+//     //     fprintf(stderr, "Failed to open input file %s\n", argv[1]);
+//     //     return 1;
+//     // }
+//     // fseek(in, 0, SEEK_END);
+//     // long fsize = ftell(in);
+//     // fseek(in, 0, SEEK_SET);
+//     // char *text = malloc(fsize + 1);
+//     // fread(text, fsize, 1, in);
+//     // fclose(in);
+//     // printf("5\n");
+//     // text[fsize] = 0;
+//     // printf("text len: %ld\n",fsize);
+//     char * text = "";
     
-    enum TglangLanguage type = tglang_detect_programming_language(text);
-    printf("classified as %d\n",type);
+//     enum TglangLanguage type = tglang_detect_programming_language(text);
+//     printf("classified as %d\n",type);
 
-    return 0;
-}
+//     return 0;
+// }

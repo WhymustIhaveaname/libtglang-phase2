@@ -10,12 +10,12 @@ Then feed this 200-dimension vector into a fully-connection neural network and g
 
 The selection of keywords is done by first selecting many candidates.
 We count the frequency of 2-tuple, 3-tuple, ..., and 20-tuple and use the most common 500 words as the candidates.
-Then we train a random forest and pick out the "important" ones (there is a defination of 'importance' in random forest methods).
+Then we train a random forest and pick out the __"important"__ ones (there is a defination of 'importance' in random forest methods).
 Then we write down the keywords in `constants.py` and never touch it again.
 
 To train the fully connected network, we first label the given dataset and write the result into an SQL database (this is indeed tedious work).
 We use the standard routine in PyTorch to train the network.
-`pytorch2c.py` will write the trained parameters into a '.h' file, i.e. our model is hard-coded in the .so.
+`classify_fc.py` will write the trained parameters into `parameters.h`, i.e. our model is hard-coded in the .so.
 This could make our code super fast.
 
 The complexity of counting the appearance of keywords is O(kn) where n is the length of the text and k is the maximum length of keywords.
@@ -29,12 +29,17 @@ The golden rule in training classifiers is that the ratio #(most common label)/#
 So we first do a 2-classification, in which the label unbalance is 9:1.
 Then we do the 28-classification of programming languages.
 
+The final result is __98.11%__ for code/other classification and __80.47%__ on programming language classification.
+The avgeage speed is __1.33ms__ per case (on R7-5800X CPU).
+The .so passed test on Fedora33 and Ubuntu20.
+
 ## File Descriptions
 
 * `constants.py` is basically `tglang.h`.
-* `data_utils.py` loads the dataset into SQLite and reads SQLite out as `[(text, label),...]`, `ml2023dataset.db` is the database it created.
-* `classify_fc.py` trains the fully-connection classifier. `pytorch2c.py` writes the trained parameters into a C file.
+* `data_utils.py` loads the dataset into SQLite and reads SQLite out as `[(text, label),...]`, `ml2023dataset.db` is the database it created. It also tests the final `libtglang-tester`
+* `determine_keywords.py` outputs keyword candidates using statistics.
 * `classify_tree` trains a random forest classifier. This classifier will not be used in C code but help us select important keywords.
+* `classify_fc.py` trains the fully-connection classifier and then writes the trained parameters into `parameters.h`.
 * `tglang.pyx`,`setup.py`: deprecated. We tried to compile a '.so' directly from Python but failed.
 
 ## Todo List
@@ -42,8 +47,8 @@ Then we do the 28-classification of programming languages.
 - [x] Wash the dataset and classify them
 - [x] Select the keywords candidates by counting the freq of n-tuples.
 - [x] Select the keywords using the random forest method.
-- [ ] Train the neural network using PyTorch.
-- [ ] Write the trained parameters into C and compile to .so
+- [x] Train the neural network using PyTorch.
+- [x] Write the trained parameters into C and compile to .so
 - [ ] Write the matrix multiplication in BLAS
 
 ## Dataset Properties
@@ -54,6 +59,8 @@ The longest human language is 11117; the longest code is 4081. Some very long co
 
 We did some simple classification. The languages, their index and #appearing, and the frequency are as follows (sorted by the freq):
 
+|      Lang| ID|Count|Freq|
+|----------|---|-----|----|
 |      OTHER| 0|41082|91.80%|
 |      SHELL|22|  765|1.71%|
 |     PYTHON|19|  690|1.54%|

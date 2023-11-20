@@ -68,7 +68,7 @@ def traverse_folder(dataset="r1"):
     conn.close()
     print("there are %d files, among them %s are codes"%(numfile,numcode))
 
-def test_libtglang(dataset="r1"):
+def test_libtglang(dataset="d1"):
     cmds = ["cd ./libtglang-tester-r2/build","cmake ..","cmake --build ."]
     os.system(" && ".join(cmds))
 
