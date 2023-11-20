@@ -4,6 +4,7 @@
 import os
 import re
 import time
+import pickle
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -16,19 +17,19 @@ torch.manual_seed(2023)
 
 
 class FClassifier(nn.Module):
-    def __init__(self):
+    def __init__(self, output_size, hidden_size=32):
         super().__init__()
-        input_size = len(keywords)
-        num_classes = len(TglangLanguage)
+        self.input_size = len(keywords)
+        self.hidden_size = hidden_size
+        self.output_size = output_size
         self.fc = nn.Sequential(
-            nn.Linear(input_size, 32),
+            nn.Linear(self.input_size, self.hidden_size),
             nn.LeakyReLU(),
-            nn.Linear(32, num_classes),
+            nn.Linear(self.hidden_size, self.output_size),
         )
 
     def forward(self, x):
-        out = self.fc(x)
-        return out
+        return self.fc(x)
 
 
 def load_data(ratio=10):
@@ -39,12 +40,11 @@ def load_data(ratio=10):
     counter = {i: 0 for i in range(29)}
     for text, type29 in tqdm(data):
         counter[type29] += 1
+        y = torch.tensor(type29, dtype=torch.long)
         if counter[type29] % ratio == 0:
-            testset.append(
-                (text2feature2(text), torch.tensor(type29, dtype=torch.long)))
+            testset.append((text2feature2(text), y))
         else:
-            trainset.append(
-                (text2feature2(text), torch.tensor(type29, dtype=torch.long)))
+            trainset.append((text2feature2(text), y))
     print("split into %d train and %d test" % (len(trainset), len(testset)))
     return trainset, testset
 
@@ -82,12 +82,21 @@ def text2feature2(text):
     return x
 
 
-def train():
-    model = FClassifier()
+def train01():
+    model = FClassifier(output_size=2)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-    trainset, testset = load_data()
+    # trainset, testset = load_data()
+    # with open("datar1.pickle", 'wb') as f:
+    #     pickle.dump((trainset, testset), f)
+    with open("datar1.pickle", 'rb') as f:
+        trainset, testset = pickle.load(f)
+    trainset = [(i, j if j == 0 else torch.tensor(1, dtype=torch.long))
+                for i, j in trainset]
+    testset = [(i, j if j == 0 else torch.tensor(1, dtype=torch.long))
+               for i, j in testset]
+
     traindl = DataLoader(dataset=trainset, batch_size=16,
                          shuffle=True, drop_last=True)
     testdl = DataLoader(dataset=testset, batch_size=16, shuffle=False)
@@ -107,41 +116,37 @@ def train():
             totnum += len(labels)
 
         if (epoch+1) % 1 == 0:
-            trainloss, trainc1, trainc2 = test(model, traindl)
-            testloss, testc1, testc2 = test(model, testdl)
-            print('Epoch %2d, Train: %.4f, %.2f, %.2f; Test: %.4f, %.2f, %.2f' % (
-                epoch+1, trainloss, trainc1*100, trainc2*100, testloss, testc1*100, testc2*100))
+            traincorr = test(model, traindl)
+            testcorr = test(model, testdl)
+            print('Epoch %2d, Train: %.4f, %.2f; Test: %.2f' % (
+                epoch+1, totloss/totnum, traincorr*100, testcorr*100))
     return model
 
 
 def test(model, dl):
+    """
+    Best in Phase 1:
+        Code/Other Detection: 62.7
+        Language Detection: 79.5
+    """
     model.eval()
     with torch.no_grad():
-        criterion = nn.CrossEntropyLoss()
-        totloss = 0.0
-        totnum = 0.1
-        codetect = 0  # Code/Other Detection: 62.7
-        langdetect = 0  # Language Detection: 79.5
-        langnum = 0.1
+        totnum = 0
+        corrnum = 0
         for inputs, labels in dl:
             outputs = model(inputs)
-            loss = criterion(outputs, labels)
-            totloss += loss.item()
             totnum += len(labels)
             predicted = outputs.argmax(dim=1)
-            codetect += ((predicted == 0) == (labels == 0)).sum().item()
-            langdetect += torch.logical_and(predicted ==
-                                            labels, labels > 0).sum().item()
-            langnum += (labels > 0).sum().item()
+            corrnum += (predicted == labels).sum().item()
     model.train()
-    return totloss/totnum, codetect/totnum, langdetect/langnum
+    return corrnum/totnum
 
 
 if __name__ == "__main__":
     # stat()
     # trainset,testset = load_data()
     # print(testset[0])
-    model = train()
+    model = train01()
     f = open('parameters.h', 'w')
     i = 1
     for name, parameters in model.named_parameters():
