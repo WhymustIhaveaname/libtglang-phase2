@@ -87,7 +87,7 @@ def text2feature2(text):
 def train_a_model(model,criterion,optimizer,traindl,testdl):
     best_model = None
     best_testscore = 0.0
-    for epoch in range(40):
+    for epoch in range(50):
         totloss = 0.0
         totnum = 0
         for inputs, labels in traindl:
@@ -109,7 +109,12 @@ def train_a_model(model,criterion,optimizer,traindl,testdl):
             print("----new best model!----")
             print('Epoch %2d, Train: %.6f, %.4f; Test: %.4f' % (
                 epoch+1, totloss/totnum, traincorr*100, testcorr*100))
-            print('\t(test) confusion matrix: %s'%(confusion))
+            if model.output_size<3:
+                print('\t(test) confusion matrix: %s'%(confusion))
+            else:
+                confusion = [(idx2lang[i+1],j,k,l) for i,(j,k,l) in enumerate(confusion)]
+                confusion.sort(key=lambda x: x[1]+x[2],reverse=True)
+                print(confusion[0:10])
     return best_model
 
 def train01():
@@ -141,19 +146,30 @@ def train01():
 
 def train28():
     model = FClassifier(output_size=28)
-    criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=0.0001)
+    optimizer = optim.Adam(model.parameters(), lr=0.0005, weight_decay=0.00001)
 
-    trainset, testset = load_data(elim={0,})
-    with open("datar1d1code.pickle", 'wb') as f:
-        pickle.dump((trainset, testset), f)
-    # with open("datar1d1code.pickle", 'rb') as f:
-    #     trainset, testset = pickle.load(f)
+    # trainset, testset = load_data(elim={0,})
+    # with open("datar1d1code.pickle", 'wb') as f:
+    #     pickle.dump((trainset, testset), f)
+    with open("datar1d1.pickle", 'rb') as f:
+        trainset, testset = pickle.load(f)
     trainset = [(i, j-1) for i, j in trainset if j > 0]
     testset = [(i, j-1) for i, j in testset if j > 0]
     traindl = DataLoader(dataset=trainset, batch_size=16,
                          shuffle=True, drop_last=True)
     testdl = DataLoader(dataset=testset, batch_size=16, shuffle=False)
+    print("train data len: %d"%(len(trainset)))
+    
+    ignore_lang = torch.tensor([16,25,7,26,20,18,15,5,28]) # from OBJ_C to XML
+    # weight = [sum(1.0 for j,k in trainset if k==i) for i in range(model.output_size)]
+    # weight = torch.tensor(weight)
+    # weight = 1/weight
+    weight = torch.ones(model.output_size)
+    # weight[ignore_lang-1] = 0.0
+    # weight/= weight.sum()
+    # weight*= model.output_size
+    print("weight",weight)
+    criterion = nn.CrossEntropyLoss(weight=weight)
 
     return train_a_model(model,criterion,optimizer,traindl,testdl)
 
@@ -213,19 +229,19 @@ def save_keywords(f):
     print("wrote keywords to",f)
 
 
-def save_nn(model, f):
-    f.write("#define HIDDENSIZE %d\n" % (model.hidden_size))
+def save_nn(netname,model,f):
+    f.write("#define %s_HIDDENSIZE %d\n" % (netname,model.hidden_size))
     i = 1
     for name, parameters in model.named_parameters():
         numbers = parameters.data.tolist()
         if name.endswith('weight'):
-            f.write('const float weight%d[%d][%d] = {' % (
-                i, len(numbers), len(numbers[0])))
+            f.write('const float %s_wt%d[%d][%d] = {' % (
+                netname, i, len(numbers), len(numbers[0])))
             for nums in numbers:
                 f.write('{'+', '.join([str(num) for num in nums])+'},\n    ')
             f.write('};\n')
         else:
-            f.write('const float bias%d[%d] = {' % (i, len(numbers)))
+            f.write('const float %s_b%d[%d] = {' % (netname, i, len(numbers)))
             f.write(', '.join([str(num) for num in numbers])+'};\n')
             i += 1
     print("wrote nn parameters to",f)
@@ -244,8 +260,10 @@ if __name__ == "__main__":
     # stat()
     # trainset,testset = load_data()
     # print(testset[0])
-    model = train01()
+    model01 = train01()
+    model28 = train28()
     f = open('parameters.h', 'w')
     save_keywords(f)
-    save_nn(model, f)
+    save_nn("net1",model01, f)
+    save_nn("net2",model28, f)
     f.close()
