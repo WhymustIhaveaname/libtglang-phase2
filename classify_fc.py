@@ -5,6 +5,7 @@ import os
 import re
 import time
 import pickle
+import copy
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -33,7 +34,7 @@ class FClassifier(nn.Module):
 
 
 def load_data(ratio=10, elim={}):
-    data = read_db()
+    data = read_db()+read_db(table='datasetd1')
     print('totally %d datas' % (len(data)))
     trainset = []
     testset = []
@@ -83,27 +84,10 @@ def text2feature2(text):
             i = i+l
     return x
 
-
-def train01():
-    model = FClassifier(output_size=2)
-    criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=0.0001)
-
-    trainset, testset = load_data()
-    with open("datar1.pickle", 'wb') as f:
-        pickle.dump((trainset, testset), f)
-    # with open("datar1.pickle", 'rb') as f:
-    #     trainset, testset = pickle.load(f)
-    trainset = [(i, j if j == 0 else torch.tensor(1, dtype=torch.long))
-                for i, j in trainset]
-    testset = [(i, j if j == 0 else torch.tensor(1, dtype=torch.long))
-               for i, j in testset]
-
-    traindl = DataLoader(dataset=trainset, batch_size=16,
-                         shuffle=True, drop_last=True)
-    testdl = DataLoader(dataset=testset, batch_size=16, shuffle=False)
-
-    for epoch in range(10):
+def train_a_model(model,criterion,optimizer,traindl,testdl):
+    best_model = None
+    best_testscore = 0.0
+    for epoch in range(40):
         totloss = 0.0
         totnum = 0
         for inputs, labels in traindl:
@@ -117,23 +101,53 @@ def train01():
             totloss += loss.item()
             totnum += len(labels)
 
-        if (epoch+1) % 1 == 0:
-            traincorr = test(model, traindl)
-            testcorr = test(model, testdl)
-            print('Epoch %2d, Train: %.4f, %.2f; Test: %.2f' % (
-                epoch+1, totloss/totnum, traincorr*100, testcorr*100))
-    return model
+        traincorr,_ = test(model, traindl)
+        testcorr,confusion = test(model, testdl)
+        if testcorr>=best_testscore:
+            best_testscore = testcorr
+            best_model = copy.deepcopy(model)
+            print("----new best model!----")
+        print('Epoch %2d, Train: %.6f, %.4f; Test: %.4f' % (
+            epoch+1, totloss/totnum, traincorr*100, testcorr*100))
+        print('\t(test) confusion matrix: %s'%(confusion))
+    return best_model
+
+def train01():
+    model = FClassifier(output_size=2)
+    optimizer = optim.Adam(model.parameters(), lr=0.0001)
+
+    # trainset, testset = load_data()
+    # with open("datar1d1.pickle", 'wb') as f:
+    #     pickle.dump((trainset, testset), f)
+    with open("datar1d1.pickle", 'rb') as f:
+        trainset, testset = pickle.load(f)
+    eins = torch.tensor(1, dtype=torch.long)
+    trainset = [(i, j if j == 0 else eins) for i, j in trainset]
+    testset = [(i, j if j == 0 else eins) for i, j in testset]
+
+    weight = [sum(1.0 for j,k in trainset if k==i) for i in range(model.output_size)]
+    weight = torch.tensor(weight)
+    weight = 1/weight
+    weight/= weight.sum()
+    print("weight",weight)
+    criterion = nn.CrossEntropyLoss(weight=weight)
+
+    traindl = DataLoader(dataset=trainset, batch_size=16,
+                         shuffle=True, drop_last=True)
+    testdl = DataLoader(dataset=testset, batch_size=16, shuffle=False)
+
+    return train_a_model(model,criterion,optimizer,traindl,testdl)
 
 
 def train28():
     model = FClassifier(output_size=28)
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=0.0005)
+    optimizer = optim.Adam(model.parameters(), lr=0.0001)
 
-    trainset, testset = load_data(elim={0, })
-    with open("datar1code.pickle", 'wb') as f:
+    trainset, testset = load_data(elim={0,})
+    with open("datar1d1code.pickle", 'wb') as f:
         pickle.dump((trainset, testset), f)
-    # with open("datar1code.pickle", 'rb') as f:
+    # with open("datar1d1code.pickle", 'rb') as f:
     #     trainset, testset = pickle.load(f)
     trainset = [(i, j-1) for i, j in trainset if j > 0]
     testset = [(i, j-1) for i, j in testset if j > 0]
@@ -141,26 +155,7 @@ def train28():
                          shuffle=True, drop_last=True)
     testdl = DataLoader(dataset=testset, batch_size=16, shuffle=False)
 
-    for epoch in range(50):
-        totloss = 0.0
-        totnum = 0
-        for inputs, labels in traindl:
-            outputs = model(inputs)
-            loss = criterion(outputs, labels)
-
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
-
-            totloss += loss.item()
-            totnum += len(labels)
-
-        if (epoch+1) % 1 == 0:
-            traincorr = test(model, traindl)
-            testcorr = test(model, testdl)
-            print('Epoch %2d, Train: %.8f, %.8f; Test: %.8f' % (
-                epoch+1, totloss/totnum, traincorr*100, testcorr*100))
-    return model
+    return train_a_model(model,criterion,optimizer,traindl,testdl)
 
 
 def test(model, dl):
@@ -173,13 +168,18 @@ def test(model, dl):
     with torch.no_grad():
         totnum = 0
         corrnum = 0
+        confusion = [[0,0,0] for i in range(model.output_size)] # false positive, false negative, totnumber
         for inputs, labels in dl:
             outputs = model(inputs)
             totnum += len(labels)
             predicted = outputs.argmax(dim=1)
             corrnum += (predicted == labels).sum().item()
+            for i in range(model.output_size):
+                confusion[i][2] += (labels==i).sum().item()
+                confusion[i][0] += torch.logical_and(predicted==i,labels!=i).sum().item()
+                confusion[i][1] += torch.logical_and(predicted!=i,labels==i).sum().item()
     model.train()
-    return corrnum/totnum
+    return corrnum/totnum,confusion
 
 
 def str_repr(word):
@@ -233,7 +233,7 @@ if __name__ == "__main__":
     # stat()
     # trainset,testset = load_data()
     # print(testset[0])
-    model = train28()
+    model = train01()
     f = open('parameters.h', 'w')
     save_keywords(f)
     save_nn(model, f)

@@ -118,7 +118,7 @@ keywords = ['):\n', '",\n', ');\n', '-', '(', '_', ':', '/', ';\n', '}',
 keywords += ['&&', '|', '-D', 'apt', 'git', 'echo',
              '-i', 'grep', 'HEADER', 'pip', 'in', 'cat', '-j']
 
-keywords = list(set(keywords))
+keywords = list(set(i for i in keywords if len(i)<=10))
 keywords.sort(key=str.lower)
 
 kmax = max(len(k) for k in keywords)
