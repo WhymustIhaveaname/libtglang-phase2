@@ -32,13 +32,15 @@ class FClassifier(nn.Module):
         return self.fc(x)
 
 
-def load_data(ratio=10):
-    data = read_db()[::100]
+def load_data(ratio=10, elim={}):
+    data = read_db()
     print('totally %d datas' % (len(data)))
     trainset = []
     testset = []
     counter = {i: 0 for i in range(29)}
     for text, type29 in tqdm(data):
+        if type29 in elim:
+            continue
         counter[type29] += 1
         y = torch.tensor(type29, dtype=torch.long)
         if counter[type29] % ratio == 0:
@@ -90,8 +92,8 @@ def train01():
     trainset, testset = load_data()
     with open("datar1.pickle", 'wb') as f:
         pickle.dump((trainset, testset), f)
-    with open("datar1.pickle", 'rb') as f:
-        trainset, testset = pickle.load(f)
+    # with open("datar1.pickle", 'rb') as f:
+    #     trainset, testset = pickle.load(f)
     trainset = [(i, j if j == 0 else torch.tensor(1, dtype=torch.long))
                 for i, j in trainset]
     testset = [(i, j if j == 0 else torch.tensor(1, dtype=torch.long))
@@ -123,6 +125,44 @@ def train01():
     return model
 
 
+def train28():
+    model = FClassifier(output_size=28)
+    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.Adam(model.parameters(), lr=0.0005)
+
+    trainset, testset = load_data(elim={0, })
+    with open("datar1code.pickle", 'wb') as f:
+        pickle.dump((trainset, testset), f)
+    # with open("datar1code.pickle", 'rb') as f:
+    #     trainset, testset = pickle.load(f)
+    trainset = [(i, j-1) for i, j in trainset if j > 0]
+    testset = [(i, j-1) for i, j in testset if j > 0]
+    traindl = DataLoader(dataset=trainset, batch_size=16,
+                         shuffle=True, drop_last=True)
+    testdl = DataLoader(dataset=testset, batch_size=16, shuffle=False)
+
+    for epoch in range(50):
+        totloss = 0.0
+        totnum = 0
+        for inputs, labels in traindl:
+            outputs = model(inputs)
+            loss = criterion(outputs, labels)
+
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
+            totloss += loss.item()
+            totnum += len(labels)
+
+        if (epoch+1) % 1 == 0:
+            traincorr = test(model, traindl)
+            testcorr = test(model, testdl)
+            print('Epoch %2d, Train: %.8f, %.8f; Test: %.8f' % (
+                epoch+1, totloss/totnum, traincorr*100, testcorr*100))
+    return model
+
+
 def test(model, dl):
     """
     Best in Phase 1:
@@ -141,6 +181,7 @@ def test(model, dl):
     model.train()
     return corrnum/totnum
 
+
 def str_repr(word):
     word = repr(word)           # 去掉转义，比如\n
     word = word[1:len(word)-1]  # 去掉转义的同时会把两边的引号显现出来，把它去掉
@@ -155,12 +196,12 @@ def str_repr(word):
 
 
 def save_keywords(f):
-    f.write("#define KEYWORDLEN %d\n"%(kmax))
-    f.write("#define KEYWORDNUM %d\n"%(len(keywords)))
+    f.write("#define KEYWORDLEN %d\n" % (kmax))
+    f.write("#define KEYWORDNUM %d\n" % (len(keywords)))
     f.write('const char *keywords_list[]={')
-    for i,word in enumerate(keywords):
-        f.write('"%s", '%(str_repr(word)))
-        if (i+1)%10==0:
+    for i, word in enumerate(keywords):
+        f.write('"%s", ' % (str_repr(word)))
+        if (i+1) % 10 == 0:
             f.write("\n")
     f.write('};\n')
     # f.write('const char *text_keywords_list[]={')
@@ -170,27 +211,30 @@ def save_keywords(f):
     #         f.write("\n")
     # f.write('};\n')
 
-def save_nn(model,f):
-    f.write("#define HIDDENSIZE %d\n"%(model.hidden_size))
+
+def save_nn(model, f):
+    f.write("#define HIDDENSIZE %d\n" % (model.hidden_size))
     i = 1
     for name, parameters in model.named_parameters():
         numbers = parameters.data.tolist()
         if name.endswith('weight'):
-            f.write('const float weight%d[%d][%d] = {'%(i,len(numbers),len(numbers[0])))
+            f.write('const float weight%d[%d][%d] = {' % (
+                i, len(numbers), len(numbers[0])))
             for nums in numbers:
                 f.write('{'+', '.join([str(num) for num in nums])+'},\n    ')
             f.write('};\n')
         else:
-            f.write('const float bias%d[%d] = {'%(i,len(numbers)))
+            f.write('const float bias%d[%d] = {' % (i, len(numbers)))
             f.write(', '.join([str(num) for num in numbers])+'};\n')
             i += 1
+
 
 if __name__ == "__main__":
     # stat()
     # trainset,testset = load_data()
     # print(testset[0])
-    model = train01()
+    model = train28()
     f = open('parameters.h', 'w')
     save_keywords(f)
-    save_nn(model,f)
+    save_nn(model, f)
     f.close()
