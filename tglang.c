@@ -14,7 +14,7 @@
 #define STRHARDCUT 512
 
 struct hash_set {
-    char name[KEYWORDLEN];     /* key (string is WITHIN the structure) */
+    char name[KEYWORDLEN+1];     /* key (string is WITHIN the structure) */
     int id;
     UT_hash_handle hh;         /* makes this structure hashable */
 };
@@ -110,7 +110,7 @@ void relu(float *x, int n){
     }
 }
 
-enum TglangLanguage tglang_detect_programming_language(const char *text) {
+enum TglangLanguage fc_classify(const char *text) {
     struct hash_set *s, *keywords = NULL;
     for (int i = 0; i<KEYWORDNUM; i++) {
         s = (struct hash_set *)malloc(sizeof *s);
@@ -118,7 +118,7 @@ enum TglangLanguage tglang_detect_programming_language(const char *text) {
         s->id = i;
         HASH_ADD_STR(keywords, name, s);
     }
-    // print_hash_set(keywords);
+    //print_hash_set(keywords);
 
     while (text[0] == '\n' || text[0] == ' ') { // text = text.strip()
         text++;
@@ -126,58 +126,65 @@ enum TglangLanguage tglang_detect_programming_language(const char *text) {
 
     float freq[KEYWORDNUM]={0.0};
     count_keyword_frequency(text,keywords,freq);
-    // printf("freq:\n");
+    // printf("nz freq: ");
     // for(int i=0;i<KEYWORDNUM;i++){
-    //     printf("%f,", freq[i]);
+    //     if(freq[i]>0){printf("%.1f %s, ", freq[i],keywords_list[i]);}
     // }
+    // printf("\n");
 
-    printf("keyword freq in %s: ",text);
-    for(int i=0;i<KEYWORDNUM;i++){
-        printf("%.4f, ", freq[i]);
+    {
+        float ans1[net1_HIDDENSIZE],ans2[2];
+        blas2((const float *)net1_wt1,freq,net1_b1,net1_HIDDENSIZE,KEYWORDNUM,ans1);
+        relu(ans1,net1_HIDDENSIZE);
+        blas2((const float *)net1_wt2,ans1,net1_b2,2,net1_HIDDENSIZE,ans2);
+
+        // printf("0/1 classify ans: %.2f, %.2f\n",ans2[0],ans2[1]);
+
+        if(ans2[0]>ans2[1]){
+            return TGLANG_LANGUAGE_OTHER;
+        }
     }
-    printf("\n");
-
-    // float ans[2];
-    // blas2((const float *)weight,freq,bias,2,4,ans);
-
-    float ans1[HIDDENSIZE],ans2[2];
-    blas2((const float *)weight1,freq,bias1,HIDDENSIZE,KEYWORDNUM,ans1);
-    relu(ans1,HIDDENSIZE);
-    blas2((const float *)weight2,ans1,bias2,2,HIDDENSIZE,ans2);
-
-    printf("classify ans: ");
-    for(int i=0;i<2;i++){
-        printf("%.2f, ",ans2[i]);
-    }
-    printf("\n");
+    
+    float bns1[net2_HIDDENSIZE],bns2[28];
+    blas2((const float *)net2_wt1,freq,net2_b1,net2_HIDDENSIZE,KEYWORDNUM,bns1);
+    relu(bns1,net2_HIDDENSIZE);
+    blas2((const float *)net2_wt2,bns1,net2_b2,28,net2_HIDDENSIZE,bns2);
 
     int maxidx = 0;
-    float maxval = ans2[0];
-    for(int i=1;i<2;i++){
-        if(ans2[i]>maxval){
-            maxval = ans2[i];
+    float maxval = bns2[0];
+    for(int i=1;i<28;i++){
+        if(bns2[i]>maxval){
+            maxval = bns2[i];
             maxidx = i;
         }
     }
-    return (enum TglangLanguage) maxidx;
+    return (enum TglangLanguage) maxidx+1;
+}
+
+enum TglangLanguage tglang_detect_programming_language(const char *text) {
+    return fc_classify(text);
 }
 
 int main(int argc, char *argv[]) {
     int keyword_num = sizeof(keywords_list) / sizeof(keywords_list[0]);
     printf("There are %d keywords\n", keyword_num);
-
-    FILE *in = fopen("ml2023-r1-dataset/00/00add14832345aebf61f-CODE.txt", "rb");
+    
+    printf("reading %s",argv[1]);
+    FILE *in = fopen(argv[1], "rb");
+    if (in == NULL) {
+        fprintf(stderr, "Failed to open input file %s\n", argv[1]);
+        return 1;
+    }
     fseek(in, 0, SEEK_END);
     long fsize = ftell(in);
     fseek(in, 0, SEEK_SET);
-
     char *text = malloc(fsize + 1);
     fread(text, fsize, 1, in);
     fclose(in);
-
-    const char *input1="<!-- HTML 代码 -->\n<button id=\"myButton\">点击我执行命令</button>\n<div class=\"myClass\">这是一个需要点击的元素</div>";
-    const char *input2="Here is an example of text.";
-
+    printf("5\n");
+    text[fsize] = 0;
+    printf("text len: %ld\n",fsize);
+    
     enum TglangLanguage type = tglang_detect_programming_language(text);
     printf("classified as %d\n",type);
 

@@ -258,11 +258,12 @@ def save_nn(netname, model, f):
 def check_keyword_freq():
     conn = sqlite3.connect(db_name)
     c = conn.cursor()
-    c.execute('select file_path,file_text,type29 from datasetr1 where type29>10 and type29<100 order by id limit 100;')
-    for file_path, file_text, type_29 in c.fetchall():
-        print(file_path)
-        print(text2feature(file_text))
-        print(text2feature2(file_text))
+    c.execute('select file_path,file_text,type29 from datasetr1 where type29>0 and type29<100 order by id limit 100;')
+    for file_path, file_text, type29 in c.fetchall():
+        print(file_path,type29)
+        with open(file_path,'r') as f:
+            file_text = f.read()
+        print([(j.item(),keywords[i]) for i,j in enumerate(text2feature2(file_text)) if j>0])
         input()
 
 
@@ -270,10 +271,11 @@ if __name__ == "__main__":
     # stat()
     # trainset,testset = load_data()
     # print(testset[0])
-    model01 = train01()
-    model28 = train28()
-    f = open('parameters.h', 'w')
-    save_keywords(f)
-    save_nn("net1", model01, f)
-    save_nn("net2", model28, f)
-    f.close()
+    check_keyword_freq()
+    # model01 = train01()
+    # model28 = train28()
+    # f = open('parameters.h', 'w')
+    # save_keywords(f)
+    # save_nn("net1", model01, f)
+    # save_nn("net2", model28, f)
+    # f.close()

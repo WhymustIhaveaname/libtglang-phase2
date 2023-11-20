@@ -74,18 +74,26 @@ def test_libtglang(dataset="r1"):
 
     conn = sqlite3.connect(db_name)
     c = conn.cursor()
-    numfile = c.execute("select count(*) from dataset%s;"%(dataset)).fetchone()[0];
-    numcode = c.execute("select count(*) from dataset%s where type01>0;"%(dataset)).fetchone()[0];
-    datas = c.execute("select file_path,type01,type29 from dataset%s;"%(dataset)).fetchall()
+    numfile,numcode = 0,0
+    datas = c.execute("select file_path,type01,type29 from dataset%s where type29>=0 and type29<100;"%(dataset)).fetchall()
     conn.close()
     corr01,corr28 = 0,0
     for file_path,ans01,ans29 in tqdm(datas):
-            pred = os.popen("./libtglang-tester-r2/build/tglang-tester %s"%(file_path)).read()
+        numfile += 1
+        numcode += ans01
+        pred = os.popen("./libtglang-tester-r2/build/tglang-tester %s"%(file_path)).read()
+        try:
             pred = int(pred.strip().split('\n')[-1])
-            if (pred==0)==(ans01==0):
-                corr01 += 1
+        except:
+            print("error dealing %s, output is %s"%(file_path,pred))
+            continue
+        if (pred==0)==(ans01==0):
+            corr01 += 1
+        if ans01>0 and pred==ans29:
+            corr28 += 1
     print("numfile, numcode",numfile,numcode)
     print("text/code correct ratio: %.4f"%(corr01/numfile))
+    print("code correct ratio: %.4f"%(corr28/numcode))
 
 
 def stat():
