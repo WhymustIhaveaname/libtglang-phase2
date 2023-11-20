@@ -67,31 +67,31 @@ lang2idx['HASKELL'] = 113
 # each line is 10 keywords
 # del by human: , '---', 'https://', '2023-10', '--------------------', '----------------', '------------', '===================='
 # , 'Players.LocalPlayer.', '////////////////////', '                    '
-text_keywords = ['=', '}', '{\n', ':', '_', '(', '}\n', '-', '/', 'print(',
-                 '": ', '()', ');', '    ', 'in', 'sudo ', ';', '<', 'or', '// ',
-                 'install', '","', ');\n', 'import', ' to ', '//', '0000', 'as', ']', '000',
-                 '>', '{', 'name', ',\n', 'def', '()\n', 'return', '();', 'do',
-                 '----', '\\', ' of ', '#', 'not', 'is', 'and', '},', 'package',
-                 'await', ';\n', '>\n', '))', 'else', 'const',  'console.log(', '},\n', 'if', 'var',
-                 '_name', 'list', 'input', ')', '):\n', '=>', '", ', 'http', 'main', 'auto',
-                 'string', ']\n', 'True', '->', 'send_', ' on ', 'String', 'class', 'interface', ' no ',
-                 ' at ', '",\n', 'delete', 'new', 'export', 'Console\\', 'from', ' with ',
-                 '[', 'size', 'config', 'quest', 'load', 'Character.', 'let', 'str', 'async', 'extern',
-                 'del', 'self', ' then ', ' by ', 'println(', 'float', 'try', ')\n', 'extends', 'public',
-                 'int', ' do ', ':\n', '==', 'value', ': {', 'print', 'index', 'end',
-                 ' in ', ' into ', ' up ', '>>', 'pass', '<<', 'Command', 'elif', '====',
-                 'assert', 'null', 'xor', ' like ', '.log(', 'enum', ': "', ' will ', '<iostream>', 'except',
-                 'char', 'double', ' than ', '":"', 'for', ' out ', 'asm', 'CFrame', 'break', 'filter',
-                 'signed', 'debugger', 'in (', 'System', 'layer', 'finally', ' also ', 'main()', 'cout <<',
-                 '#define ', 'username', 'https', ' this ', 'int ', 'command', ' could ',
-                 ' we ', 'header', '<< endl;\n', 'short']
+# text_keywords = ['=', '}', '{\n', ':', '_', '(', '}\n', '-', '/', 'print(',
+#                  '": ', '()', ');', '    ', 'in', 'sudo ', ';', '<', 'or', '// ',
+#                  'install', '","', ');\n', 'import', ' to ', '//', '0000', 'as', ']', '000',
+#                  '>', '{', 'name', ',\n', 'def', '()\n', 'return', '();', 'do',
+#                  '----', '\\', ' of ', '#', 'not', 'is', 'and', '},', 'package',
+#                  'await', ';\n', '>\n', '))', 'else', 'const',  'console.log(', '},\n', 'if', 'var',
+#                  '_name', 'list', 'input', ')', '):\n', '=>', '", ', 'http', 'main', 'auto',
+#                  'string', ']\n', 'True', '->', 'send_', ' on ', 'String', 'class', 'interface', ' no ',
+#                  ' at ', '",\n', 'delete', 'new', 'export', 'Console\\', 'from', ' with ',
+#                  '[', 'size', 'config', 'quest', 'load', 'Character.', 'let', 'str', 'async', 'extern',
+#                  'del', 'self', ' then ', ' by ', 'println(', 'float', 'try', ')\n', 'extends', 'public',
+#                  'int', ' do ', ':\n', '==', 'value', ': {', 'print', 'index', 'end',
+#                  ' in ', ' into ', ' up ', '>>', 'pass', '<<', 'Command', 'elif', '====',
+#                  'assert', 'null', 'xor', ' like ', '.log(', 'enum', ': "', ' will ', '<iostream>', 'except',
+#                  'char', 'double', ' than ', '":"', 'for', ' out ', 'asm', 'CFrame', 'break', 'filter',
+#                  'signed', 'debugger', 'in (', 'System', 'layer', 'finally', ' also ', 'main()', 'cout <<',
+#                  '#define ', 'username', 'https', ' this ', 'int ', 'command', ' could ',
+#                  ' we ', 'header', '<< endl;\n', 'short']
 
-text_keywords = list(set(text_keywords))  # I selected only the first 40
-text_keywords = [" %s " % (i) for i in text_keywords]
-ktextmax = max(len(k) for k in text_keywords)
+# text_keywords = list(set(text_keywords))  # I selected only the first 40
+# text_keywords = [" %s " % (i) for i in text_keywords]
+# ktextmax = max(len(k) for k in text_keywords)
 
-print("%d text_keywords: %s" % (len(text_keywords), text_keywords))
-print("max text_keywords len (ktextmax): %d" % (ktextmax))
+# print("%d text_keywords: %s" % (len(text_keywords), text_keywords))
+# print("max text_keywords len (ktextmax): %d" % (ktextmax))
 
 # These are the keywords which are important in code classify, order by importance descending.
 # each line is 10 keywords
@@ -127,34 +127,34 @@ keyword2idx = {k: i for i, k in enumerate(keywords)}
 print("%d keywords: %s" % (len(keywords), keywords))
 print("max keywords len (kmax): %d" % (kmax))
 
-f = open('keywords.h', 'w')
-f.write('const char *keywordsList[]={')
-for word in keywords:
-    word = repr(word)  # 去掉转义，比如\n
-    word = word[1:len(word)-1]  # 去掉转义的同时会把两边的引号显现出来，把它去掉
-    if '"' in word or "'" in word:
-        i = 0
-        while i < len(word):
-            if word[i] == '"' or word[i] == "'":
-                word = word[:i]+'\\'+word[i:]
-                i += 1
-            i += 1
-    f.write('"'+word+'", ')
-f.write('};\n')
-f.write('const char *text_keywordsList[]={')
-for word in text_keywords:
-    word = repr(word)
-    word = word[1:len(word)-1]
-    if '"' in word or "'" in word:
-        i = 0
-        while i < len(word):
-            if word[i] == '"' or word[i] == "'":
-                word = word[:i]+'\\'+word[i:]
-                i += 1
-            i += 1
-    f.write('"'+word+'", ')
-f.write('};\n')
-f.close()
+# f = open('keywords.h', 'w')
+# f.write('const char *keywordsList[]={')
+# for word in keywords:
+#     word = repr(word)  # 去掉转义，比如\n
+#     word = word[1:len(word)-1]  # 去掉转义的同时会把两边的引号显现出来，把它去掉
+#     if '"' in word or "'" in word:
+#         i = 0
+#         while i < len(word):
+#             if word[i] == '"' or word[i] == "'":
+#                 word = word[:i]+'\\'+word[i:]
+#                 i += 1
+#             i += 1
+#     f.write('"'+word+'", ')
+# f.write('};\n')
+# f.write('const char *text_keywordsList[]={')
+# for word in text_keywords:
+#     word = repr(word)
+#     word = word[1:len(word)-1]
+#     if '"' in word or "'" in word:
+#         i = 0
+#         while i < len(word):
+#             if word[i] == '"' or word[i] == "'":
+#                 word = word[:i]+'\\'+word[i:]
+#                 i += 1
+#             i += 1
+#     f.write('"'+word+'", ')
+# f.write('};\n')
+# f.close()
 
 '''
 # keywords = [

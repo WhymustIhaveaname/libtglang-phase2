@@ -33,7 +33,7 @@ class FClassifier(nn.Module):
 
 
 def load_data(ratio=10):
-    data = read_db()
+    data = read_db()[::100]
     print('totally %d datas' % (len(data)))
     trainset = []
     testset = []
@@ -87,9 +87,9 @@ def train01():
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-    # trainset, testset = load_data()
-    # with open("datar1.pickle", 'wb') as f:
-    #     pickle.dump((trainset, testset), f)
+    trainset, testset = load_data()
+    with open("datar1.pickle", 'wb') as f:
+        pickle.dump((trainset, testset), f)
     with open("datar1.pickle", 'rb') as f:
         trainset, testset = pickle.load(f)
     trainset = [(i, j if j == 0 else torch.tensor(1, dtype=torch.long))
@@ -101,7 +101,7 @@ def train01():
                          shuffle=True, drop_last=True)
     testdl = DataLoader(dataset=testset, batch_size=16, shuffle=False)
 
-    for epoch in range(50):
+    for epoch in range(5):
         totloss = 0.0
         totnum = 0
         for inputs, labels in traindl:
@@ -141,6 +141,49 @@ def test(model, dl):
     model.train()
     return corrnum/totnum
 
+def str_repr(word):
+    word = repr(word)           # 去掉转义，比如\n
+    word = word[1:len(word)-1]  # 去掉转义的同时会把两边的引号显现出来，把它去掉
+    if '"' in word or "'" in word:
+        i = 0
+        while i < len(word):
+            if word[i] == '"' or word[i] == "'":
+                word = word[:i]+'\\'+word[i:]
+                i += 1
+            i += 1
+    return word
+
+
+def save_keywords(f):
+    f.write("#define KEYWORDLEN %d\n"%(kmax))
+    f.write("#define KEYWORDNUM %d\n"%(len(keywords)))
+    f.write('const char *keywords_list[]={')
+    for i,word in enumerate(keywords):
+        f.write('"%s", '%(str_repr(word)))
+        if (i+1)%10==0:
+            f.write("\n")
+    f.write('};\n')
+    # f.write('const char *text_keywords_list[]={')
+    # for i,word in enumerate(text_keywords):
+    #     f.write('"%s", '%(str_repr(word)))
+    #     if (i+1)%10==0:
+    #         f.write("\n")
+    # f.write('};\n')
+
+def save_nn(model,f):
+    f.write("#define HIDDENSIZE %d\n"%(model.hidden_size))
+    i = 1
+    for name, parameters in model.named_parameters():
+        numbers = parameters.data.tolist()
+        if name.endswith('weight'):
+            f.write('const float weight%d[%d][%d] = {'%(i,len(numbers),len(numbers[0])))
+            for nums in numbers:
+                f.write('{'+', '.join([str(num) for num in nums])+'},\n    ')
+            f.write('};\n')
+        else:
+            f.write('const float bias%d[%d] = {'%(i,len(numbers)))
+            f.write(', '.join([str(num) for num in numbers])+'};\n')
+            i += 1
 
 if __name__ == "__main__":
     # stat()
@@ -148,23 +191,6 @@ if __name__ == "__main__":
     # print(testset[0])
     model = train01()
     f = open('parameters.h', 'w')
-    i = 1
-    for name, parameters in model.named_parameters():
-        numbers = parameters.data.tolist()
-        if name.endswith('weight'):
-            f.write('const float weight'+str(i))
-        else:
-            f.write('const float bias'+str(i))
-            i += 1
-        if type(numbers) == float:
-            f.write('='+str(numbers)+';\n')
-        elif type(numbers[0]) == float:  # vector
-            f.write('['+str(len(numbers)) +
-                    ']={'+', '.join([str(num) for num in numbers])+'};\n')
-        else:  # matrix
-            f.write('['+str(len(numbers))+']['+str(len(numbers[0]))+']={')
-            for nums in numbers:
-                f.write('{'+', '.join([str(num) for num in nums])+'},\n    ')
-            f.write('};\n')
+    save_keywords(f)
+    save_nn(model,f)
     f.close()
-    # print(text2feature2("alignas alignof and and_eq as asm"))

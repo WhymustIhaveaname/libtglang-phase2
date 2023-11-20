@@ -5,11 +5,11 @@
 #include "tglang.h"
 #include "parameters.h"
 
-#define KEYWORDLEN 25 //最长关键词长度
-#define KEYWORDNUM 4  //关键词个数
-const char *keywords_list[]={ "==", "=", "!=", ";" };
-const float weight[][KEYWORDNUM]={{0.0,0.0,0.0,0.0},{1.0,0.5,1.0,0.2}};
-const float bias[]={0.9,0.0};
+// #define KEYWORDLEN 25 //最长关键词长度
+// #define KEYWORDNUM 4  //关键词个数
+// const char *keywords_list[]={ "==", "=", "!=", ";" };
+// const float weight[][KEYWORDNUM]={{0.0,0.0,0.0,0.0},{1.0,0.5,1.0,0.2}};
+// const float bias[]={0.9,0.0};
 
 struct hash_set {
     char name[KEYWORDLEN];     /* key (string is WITHIN the structure) */
@@ -112,7 +112,7 @@ enum TglangLanguage tglang_detect_programming_language(const char *text) {
         s->id = i;
         HASH_ADD_STR(keywords, name, s);
     }
-    print_hash_set(keywords);
+    // print_hash_set(keywords);
 
     while (text[0] == '\n' || text[0] == ' ') { // text = text.strip()
         text++;
@@ -121,33 +121,31 @@ enum TglangLanguage tglang_detect_programming_language(const char *text) {
     float freq[KEYWORDNUM]={0.0};
     count_keyword_frequency(text,keywords,freq);
 
-    printf("keyword freq in %s: ",text);
-    for(int i=0;i<KEYWORDNUM;i++){
-        printf("%.4f, ", freq[i]);
-    }
-    printf("\n");
+    // printf("keyword freq in %s: ",text);
+    // for(int i=0;i<KEYWORDNUM;i++){
+    //     printf("%.4f, ", freq[i]);
+    // }
+    // printf("\n");
 
-    // float ans1[sizeof(bias1)/sizeof(bias1[0])]={0.0};
-    // blas2((const float *)weight1,freq,bias1,sizeof(bias1)/sizeof(bias1[0]),sizeof(freq)/sizeof(freq[0]),ans1);
-    // relu(ans1,sizeof(bias1)/sizeof(bias1[0]));
+    // float ans[2];
+    // blas2((const float *)weight,freq,bias,2,4,ans);
 
-    // float ans2[sizeof(bias2)/sizeof(bias2[0])]={0.0};
-    // blas2((const float *)weight2,ans1,bias2,sizeof(bias2)/sizeof(bias2[0]),sizeof(ans1)/sizeof(ans1[0]),ans2);
-
-    float ans[2];
-    blas2((const float *)weight,freq,bias,2,4,ans);
+    float ans1[HIDDENSIZE],ans2[2];
+    blas2((const float *)weight1,freq,bias1,HIDDENSIZE,KEYWORDNUM,ans1);
+    relu(ans1,HIDDENSIZE);
+    blas2((const float *)weight2,ans1,bias2,2,HIDDENSIZE,ans2);
 
     printf("classify ans: ");
     for(int i=0;i<2;i++){
-        printf("%.2f, ",ans[i]);
+        printf("%.2f, ",ans2[i]);
     }
     printf("\n");
 
     int maxidx = 0;
-    float maxval = ans[0];
+    float maxval = ans2[0];
     for(int i=1;i<2;i++){
-        if(ans[i]>maxval){
-            maxval = ans[i];
+        if(ans2[i]>maxval){
+            maxval = ans2[i];
             maxidx = i;
         }
     }
@@ -155,6 +153,9 @@ enum TglangLanguage tglang_detect_programming_language(const char *text) {
 }
 
 int main(int argc, char *argv[]) {
+    int keyword_num = sizeof(keywords_list) / sizeof(keywords_list[0]);
+    printf("There are %d keywords\n", keyword_num);
+
     const char *input1="Here == = != === an example of code;";
     const char *input2="Here is an example of text.";
 
