@@ -65,26 +65,28 @@ lang2idx['HASKELL'] = 113
 
 # These are the keywords which are important in text/code classify, order by importance descending.
 # each line is 10 keywords
+# del by human: , '---', 'https://', '2023-10', '--------------------', '----------------', '------------', '===================='
+# , 'Players.LocalPlayer.', '////////////////////', '                    '
 text_keywords = ['=', '}', '{\n', ':', '_', '(', '}\n', '-', '/', 'print(',
                  '": ', '()', ');', '    ', 'in', 'sudo ', ';', '<', 'or', '// ',
                  'install', '","', ');\n', 'import', ' to ', '//', '0000', 'as', ']', '000',
-                 '>', '{', 'name', ',\n', 'def', '()\n', '---', 'return', '();', 'do',
-                 '----', '\\', 'https://', ' of ', '#', 'not', 'is', 'and', '},', 'package',
-                 'await', ';\n', '>\n', '))', 'else', 'const', '--------------------', 'console.log(', '},\n', 'if', 'var',
+                 '>', '{', 'name', ',\n', 'def', '()\n', 'return', '();', 'do',
+                 '----', '\\', ' of ', '#', 'not', 'is', 'and', '},', 'package',
+                 'await', ';\n', '>\n', '))', 'else', 'const',  'console.log(', '},\n', 'if', 'var',
                  '_name', 'list', 'input', ')', '):\n', '=>', '", ', 'http', 'main', 'auto',
                  'string', ']\n', 'True', '->', 'send_', ' on ', 'String', 'class', 'interface', ' no ',
-                 ' at ', '",\n', 'delete', 'new', 'export', 'Players.LocalPlayer.', 'Console\\', '2023-10', 'from', ' with ',
+                 ' at ', '",\n', 'delete', 'new', 'export', 'Console\\', 'from', ' with ',
                  '[', 'size', 'config', 'quest', 'load', 'Character.', 'let', 'str', 'async', 'extern',
                  'del', 'self', ' then ', ' by ', 'println(', 'float', 'try', ')\n', 'extends', 'public',
-                 '----------------', 'int', ' do ', ':\n', '==', 'value', ': {', 'print', 'index', 'end',
-                 ' in ', ' into ', ' up ', '>>', 'pass', '<<', 'Command', 'elif', '------------', '====',
+                 'int', ' do ', ':\n', '==', 'value', ': {', 'print', 'index', 'end',
+                 ' in ', ' into ', ' up ', '>>', 'pass', '<<', 'Command', 'elif', '====',
                  'assert', 'null', 'xor', ' like ', '.log(', 'enum', ': "', ' will ', '<iostream>', 'except',
                  'char', 'double', ' than ', '":"', 'for', ' out ', 'asm', 'CFrame', 'break', 'filter',
-                 'signed', '////////////////////', 'debugger', 'in (', 'System', 'layer', 'finally', ' also ', 'main()', 'cout <<',
-                 '#define ', 'username', 'https', '                    ', ' this ', 'int ', '====================', ' cout <<', 'command', ' could ',
+                 'signed', 'debugger', 'in (', 'System', 'layer', 'finally', ' also ', 'main()', 'cout <<',
+                 '#define ', 'username', 'https', ' this ', 'int ', 'command', ' could ',
                  ' we ', 'header', '<< endl;\n', 'short']
 
-text_keywords = list(set(text_keywords[0:40]))  # I selected only the first 40
+text_keywords = list(set(text_keywords))  # I selected only the first 40
 text_keywords = [" %s " % (i) for i in text_keywords]
 ktextmax = max(len(k) for k in text_keywords)
 
@@ -113,12 +115,14 @@ keywords = ['):\n', '",\n', ');\n', '-', '(', '_', ':', '/', ';\n', '}',
             ' as ', 'asm', 'null', 'str', 'compl', 'union', 'break', 'global', 'nullptr', 'typename',
             '                    ', ' ] ', '----', ' - ', 'catch', 'typeof', 'operator', ' ; ', '--------', 'in (',
             'username', '() {\n', ') => {', '))', 'debugger', 'else', 'main', 'name', 'True', '////////////////////', '===', 'double', '{']
+keywords += ['&&', '|', '-D', 'apt', 'git', 'echo',
+             '-i', 'grep', 'HEADER', 'pip', 'in', 'cat', '-j']
 
 keywords = list(set(keywords))
 keywords.sort(key=str.lower)
 
 kmax = max(len(k) for k in keywords)
-keyword2idx = {k: i for i, k in enumerate(text_keywords)}
+keyword2idx = {k: i for i, k in enumerate(keywords)}
 
 print("%d keywords: %s" % (len(keywords), keywords))
 print("max keywords len (kmax): %d" % (kmax))
