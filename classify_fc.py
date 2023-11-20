@@ -37,7 +37,7 @@ def load_data(ratio=10):
     trainset = []
     testset = []
     counter = {i: 0 for i in range(29)}
-    for text, type29 in tqdm(data[:len(data)]):
+    for text, type29 in tqdm(data[:]):
         counter[type29] += 1
         if counter[type29] % ratio == 0:
             testset.append(
@@ -131,8 +131,8 @@ def test(model, dl):
             predicted = outputs.argmax(dim=1)
             codetect += ((predicted == 0) == (labels == 0)).sum().item()
             langdetect += torch.logical_and(predicted ==
-                                            labels, predicted > 0).sum().item()
-            langnum += (predicted > 0).sum().item()
+                                            labels, labels > 0).sum().item()
+            langnum += (labels > 0).sum().item()
     model.train()
     return totloss/totnum, codetect/totnum, langdetect/langnum
 
@@ -142,4 +142,24 @@ if __name__ == "__main__":
     # trainset,testset = load_data()
     # print(testset[0])
     model = train()
+    f = open('parameters.h', 'w')
+    i = 1
+    for name, parameters in model.named_parameters():
+        numbers = parameters.data.tolist()
+        if name.endswith('weight'):
+            f.write('const float weight'+str(i))
+        else:
+            f.write('const float bias'+str(i))
+            i += 1
+        if type(numbers) == float:
+            f.write('='+str(numbers)+';\n')
+        elif type(numbers[0]) == float:  # vector
+            f.write('['+str(len(numbers)) +
+                    ']={'+', '.join([str(num) for num in numbers])+'};\n')
+        else:  # matrix
+            f.write('['+str(len(numbers))+']['+str(len(numbers[0]))+']={')
+            for nums in numbers:
+                f.write('{'+', '.join([str(num) for num in nums])+'},\n    ')
+            f.write('};\n')
+    f.close()
     # print(text2feature2("alignas alignof and and_eq as asm"))
