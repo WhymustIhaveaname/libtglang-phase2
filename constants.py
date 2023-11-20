@@ -118,7 +118,7 @@ keywords = list(set(keywords))
 keywords.sort(key=str.lower)
 
 kmax = max(len(k) for k in keywords)
-keyword2idx = {k: i for i, k in enumerate(keywords)}
+keyword2idx = {k: i for i, k in enumerate(text_keywords)}
 
 print("%d keywords: %s" % (len(keywords), keywords))
 print("max keywords len (kmax): %d" % (kmax))
