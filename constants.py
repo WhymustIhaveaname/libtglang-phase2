@@ -100,11 +100,11 @@ keywords = ['):\n', '",\n', ');\n', '-', '(', '_', ':', '/', ';\n', '}',
             'in', 'const', 'print(', ':\n', ');', 'end', ' {\n ', ') {\n', '","', 'public',
             '}\n', 'new', '      ', ')\n', '        ', 'as', '->', '=>', '{\n',
             'console', 'function', '[', 'let', 'int', ']', 'var', 'import', 'string', 'void',
-            '()', 'or', ',\n', '();', 'await', 'String', 'contract', '>\n', '()\n', '\\',
+            '()', ' or ', ',\n', '();', 'await', 'String', 'contract', '>\n', '()\n', '\\',
             'load', ' import ', 'sudo ', 'class', ' { ', '<<', ') {', 'contex', 'System.out.println(', ') =>',
             'export', 'return', ' } ', 'width:', 'include', 'quest', 'https://', ' < ', '#include <iostream>',
             'struct', 'auto', '} ', '},', '_name', ') => {\n', 'false', 'cout <<', 'using', 'default',
-            'println', '            ', 'main() {\n', 'this.', 'is', ' install ', 'CFrame', 'Character.', ' > ', 'printf("',
+            'println', '            ', 'main() {\n', 'this.', ' is ', ' install ', 'CFrame', 'Character.', ' > ', 'printf("',
             'function(', 'static', '000', 'inline', 'width', 'Players.LocalPlayer.', 'using namespace std;', 'self', '<-', ' // ',
             ': "', 'print', 'https', 'config', 'enum', 'package', '// ', 'header', 'interface', 'template',
             'extends', '>>', 'extern', 'break;', 'true', 'println(', 'goto', 'Session', 'send_', 'mutable',
@@ -116,20 +116,23 @@ keywords = ['):\n', '",\n', ');\n', '-', '(', '_', ':', '/', ';\n', '}',
             '                    ', ' ] ', '----', ' - ', 'catch', 'typeof', 'operator', ' ; ', '--------', 'in (',
             'username', '() {\n', ') => {', '))', 'debugger', 'else', 'main', 'name', 'True', '////////////////////', '===', 'double', '{']
 # bash keywords
-keywords += ['&&', '|', '-D', 'apt', 'git', 'echo', '-i', 'grep', 'HEADER', 'pip', 'in', 'cat', '-j']
+keywords += ['&&', '|', '-D', 'apt', 'git', 'echo',
+             '-i', 'grep', 'HEADER', 'pip', 'in', 'cat', '-j']
 # sql keywords
-keywords += ['FROM','from','SELECT','select','NAME','name','NULL','null','ORDER','order','WHERE','where']
+keywords += ['FROM', 'from', 'SELECT', 'select', 'NAME',
+             'name', 'NULL', 'null', 'ORDER', 'order', 'WHERE', 'where']
 # java keywords
-keywords += ['public', 'java', 'String', 'System', 'println', 'return', 'null', 'board', '.org', 'import', 'List', 'static', 'void']
+keywords += ['public', 'java', 'String', 'System', 'println', 'return',
+             'null', 'board', '.org', 'import', 'List', 'static', 'void']
 # C# keywords
-keywords += ['HByte','Nybble']
+keywords += ['HByte', 'Nybble']
 # js keywords
-keywords += ['await',]
+keywords += ['await', ]
 
-keywords = list(set(i for i in keywords if len(i)<=10))
+keywords = list(set(i for i in keywords if len(i) <= 10))
 keywords.sort(key=str.lower)
 
-print([i for i in keywords if len(i)<4])
+print([i for i in keywords if len(i) < 4])
 
 kmax = max(len(k) for k in keywords)
 keyword2idx = {k: i for i, k in enumerate(keywords)}
@@ -137,10 +140,10 @@ keyword2idx = {k: i for i, k in enumerate(keywords)}
 print("%d keywords: %s" % (len(keywords), keywords))
 print("max keywords len (kmax): %d" % (kmax))
 
-kwhist = {i:0 for i in range(kmax+1)}
+kwhist = {i: 0 for i in range(kmax+1)}
 for k in keywords:
     kwhist[len(k)] += 1
-print("keywords hist: %s"%(kwhist))
+print("keywords hist: %s" % (kwhist))
 
 
 '''

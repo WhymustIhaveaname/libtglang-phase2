@@ -150,9 +150,9 @@ def train01():
 
 def train28():
     model = FClassifier(output_size=28)
-    optimizer = optim.Adam(model.parameters(), lr=0.0005, weight_decay=0.00001)
+    optimizer = optim.Adam(model.parameters(), lr=0.002, weight_decay=0.002)
 
-    # trainset, testset = load_data(elim={0,})
+    # trainset, testset = load_data(elim={0, })
     # with open("datar1d1code.pickle", 'wb') as f:
     #     pickle.dump((trainset, testset), f)
     with open("datar1d1.pickle", 'rb') as f:
@@ -270,10 +270,10 @@ if __name__ == "__main__":
     # stat()
     # trainset,testset = load_data()
     # print(testset[0])
-    model01 = train01()
+    #model01 = train01()
     model28 = train28()
     f = open('parameters.h', 'w')
-    save_keywords(f)
-    save_nn("net1", model01, f)
-    save_nn("net2", model28, f)
+    # save_keywords(f)
+    #save_nn("net1", model01, f)
+    #save_nn("net2", model28, f)
     f.close()
