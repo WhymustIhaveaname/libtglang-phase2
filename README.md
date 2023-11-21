@@ -50,6 +50,12 @@ The .so passed test on Fedora33 and Ubuntu20.
 - [x] Train the neural network using PyTorch.
 - [x] Write the trained parameters into C and compile to .so
 - [ ] Write the matrix multiplication in BLAS
+- [ ] Re-select keywords with more love
+- [ ] Try more fully connection combinations
+- [ ] Put text length into the input (features)
+- [ ] Cut each code into many to generate more train data
+- [ ] Try some new architecture which can partial consider order of keywords (Transformer is too slow for TG, so we are thinking more architectures)
+
 
 ## Dataset Properties
 
