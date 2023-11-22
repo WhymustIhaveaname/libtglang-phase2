@@ -55,6 +55,7 @@ The .so passed test on Fedora33 and Ubuntu20.
 - [ ] Put text length into the input (features)
 - [ ] Cut each code into many to generate more train data
 - [ ] Try some new architecture which can partial consider order of keywords (Transformer is too slow for TG, so we are thinking more architectures)
+- [ ] Use TF-IDF method to pre-process our frequency features
 
 
 ## Dataset Properties
