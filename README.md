@@ -30,8 +30,17 @@ So we first do a 2-classification, in which the label unbalance is 9:1.
 Then we do the 28-classification of programming languages.
 
 The final result is __98.11%__ for code/other classification and __80.47%__ on programming language classification.
-The avgeage speed is __1.33ms__ per case (on R7-5800X CPU).
-The .so passed test on Fedora33 and Ubuntu20.
+The average speed is __1.33ms__ per case (on R7-5800X CPU).
+The .so passed the test on Fedora33 and Ubuntu20.
+
+The final result from Telegram is
+```
+In our final tests, this submission received the following scores (out of 100):
+
+Code Language Detection: 75.8
+Overall Detection: 94.1
+Average Time: 0.3ms per sample
+```
 
 ## File Descriptions
 
